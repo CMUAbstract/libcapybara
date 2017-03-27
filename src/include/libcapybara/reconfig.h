@@ -1,6 +1,8 @@
 #ifndef LIBCAPYBARA_RECONFIG_H
 #define LIBCAPYBARA_RECONFIG_H
 
+#include <stdint.h>
+
 // Enable the given number of capacitor banks
 int set_c(int banks);
 
