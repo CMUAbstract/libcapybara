@@ -1,7 +1,7 @@
 LIB = libcapybara
 
 OBJECTS = \
-	reconfig.c
+	reconfig.o
 
 DEPS += \
 	libmcppot \
