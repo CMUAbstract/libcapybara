@@ -10,6 +10,9 @@
 // Bitmask identifying a set of capacitor banks
 typedef uint16_t capybara_bankmask_t;
 
+// Configure the power system runtime params
+int capybara_config(capybara_bankmask_t banks, uint16_t wiper);
+
 // Enable the capacitor banks specified in the bitmask
 int capybara_config_banks(capybara_bankmask_t banks);
 

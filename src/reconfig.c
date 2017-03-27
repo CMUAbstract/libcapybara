@@ -81,3 +81,16 @@ int capybara_config_threshold(uint16_t wiper)
     pot_set_nv_wiper(wiper);
     return 0;
 }
+
+int capybara_config(capybara_bankmask_t banks, uint16_t wiper)
+{
+    int rc;
+
+    rc = capybara_config_banks(banks);
+    if (rc) return rc;
+
+    rc = capybara_config_threshold(wiper);
+    if (rc) return rc;
+
+    return 0;
+}
