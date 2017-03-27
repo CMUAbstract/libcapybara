@@ -3,10 +3,17 @@
 
 #include <stdint.h>
 
-// Enable the given number of capacitor banks
-int set_c(int banks);
+// The following is the lowest-level interface into the reconfigurable power
+// system. The units here are bank set and wiper setting, not voltage and
+// farads, which are a higher-level concept unnecessary at runtime.
 
-// Set threshold voltage (in mV) up to which to charge capacitors
-int set_v(uint16_t th);
+// Bitmask identifying a set of capacitor banks
+typedef uint16_t capybara_bankmask_t;
+
+// Enable the capacitor banks specified in the bitmask
+int capybara_config_banks(capybara_bankmask_t banks);
+
+// Set threshold voltage up to which to charge capacitors (units: wiper setting)
+int capybara_config_threshold(uint16_t wiper);
 
 #endif // LIBCAPYBARA_RECONFIG_H

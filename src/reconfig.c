@@ -2,19 +2,14 @@
 
 #include "reconfig.h"
 
-#define THRES_MIN 2000 // mV
-#define THRES_MIN 2600 // mV
-#define V_PER_WIPER ((THRES_MAX - THRES_MIN) / POT_RESOLUTION)
-
-// Enable the given number of capacitor banks
-int set_c(int banks)
+int capybara_config_banks(capybara_bankmask_t banks)
 {
     // TODO: set GPIOs to OPEN/CLOSE switches
     return 0;
 }
 
-int set_v(uint16_t th)
+int capybara_config_threshold(uint16_t wiper)
 {
-    pot_set_nv_wiper((th - THRES_MIN) * V_PER_WIPER);
+    pot_set_nv_wiper(wiper);
     return 0;
 }
