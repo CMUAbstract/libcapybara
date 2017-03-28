@@ -97,5 +97,5 @@ int capybara_config(capybara_bankmask_t banks, uint16_t wiper)
 
 int capybara_config_max()
 {
-    capybara_config(~0, POT_RESOLUTION);
+    return capybara_config(~0, POT_RESOLUTION);
 }
