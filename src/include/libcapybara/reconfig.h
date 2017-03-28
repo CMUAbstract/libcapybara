@@ -19,4 +19,7 @@ int capybara_config_banks(capybara_bankmask_t banks);
 // Set threshold voltage up to which to charge capacitors (units: wiper setting)
 int capybara_config_threshold(uint16_t wiper);
 
+// Configure settings that store maximum energy
+int capybara_config_max();
+
 #endif // LIBCAPYBARA_RECONFIG_H
