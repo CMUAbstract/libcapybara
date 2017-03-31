@@ -6,9 +6,23 @@
 
 #include "reconfig.h"
 
-#if defined(LIBCAPYBARA_SWITCH_DESIGN__NC)
+//#define SWITCH_TIME_CYCLES 8 // cycles for the latch cap to charge/discharge
+#define SWITCH_TIME_CYCLES 1024
 
-#if defined(LIBCAPYBARA_SWITCH_CONTROL__TWO_PIN)
+#if defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
+
+#define BANK_PORT_INNER(i) LIBCAPYBARA_BANK_PORT_ ## i ## _PORT
+#define BANK_PORT(i) BANK_PORT_INNER(i)
+
+#define BANK_PIN_INNER(i) LIBCAPYBARA_BANK_PORT_ ## i ## _PIN
+#define BANK_PIN(i) BANK_PIN_INNER(i)
+
+#define ACTUATE_SWITCH(i) \
+        GPIO(BANK_PORT(i), DIR) |= BIT(BANK_PIN(i)); \
+        __delay_cycles(SWITCH_TIME_CYCLES); \
+        GPIO(BANK_PORT(i), DIR) &= ~BIT(BANK_PIN(i)); \
+
+#elif defined(LIBCAPYBARA_SWITCH_CONTROL__TWO_PIN)
 
 #define BANK_PORT_INNER(i, op) LIBCAPYBARA_BANK_PORT_ ## i ## _ ## op ## _PORT
 #define BANK_PORT(i, op) BANK_PORT_INNER(i, op)
@@ -16,30 +30,37 @@
 #define BANK_PIN_INNER(i, op) LIBCAPYBARA_BANK_PORT_ ## i ## _ ## op ## _PIN
 #define BANK_PIN(i, op) BANK_PIN_INNER(i, op)
 
+#define ACTUATE_SWITCH(i, op) \
+        GPIO(BANK_PORT(i, op), DIR) |= BIT(BANK_PIN(i, op)); \
+        __delay_cycles(SWITCH_TIME_CYCLES); \
+        GPIO(BANK_PORT(i, op), DIR) &= ~BIT(BANK_PIN(i, op)); \
+
+#endif // LIBCAPYBARA_SWITCH_CONTROL
+
+#if defined(LIBCAPYBARA_SWITCH_DESIGN__NC)
+
+#if defined(LIBCAPYBARA_SWITCH_CONTROL__TWO_PIN)
+
 #define BANK_CONNECT(i) do { \
         GPIO(BANK_PORT(i, CLOSE), OUT) |= BIT(BANK_PIN(i, CLOSE)); \
-        GPIO(BANK_PORT(i, CLOSE), DIR) |= BIT(BANK_PIN(i, CLOSE)); \
-        GPIO(BANK_PORT(i, CLOSE), DIR) &= ~BIT(BANK_PIN(i, CLOSE)); \
+        ACTUATE_SWITCH(i, CLOSE); \
     } while (0);
 
 #define BANK_DISCONNECT(i) do { \
         GPIO(BANK_PORT(i, OPEN), OUT) &= ~BIT(BANK_PIN(i, OPEN)); \
-        GPIO(BANK_PORT(i, OPEN), DIR) |= BIT(BANK_PIN(i, OPEN)); \
-        GPIO(BANK_PORT(i, OPEN), DIR) &= ~BIT(BANK_PIN(i, OPEN)); \
+        ACTUATE_SWITCH(i, OPEN); \
     } while (0);
 
 #elif defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
 
-#define BANK_PORT_INNER(i) LIBCAPYBARA_BANK_PORT_ ## i ## _ ## _PORT
-#define BANK_PORT(i) BANK_PORT_INNER(i, op)
-
-#define BANK_PIN_INNER(i) LIBCAPYBARA_BANK_PORT_ ## i ## _ ## _PIN
-#define BANK_PIN(i) BANK_PIN_INNER(i)
-
 #define BANK_CONNECT(i) do { \
         GPIO(BANK_PORT(i), OUT) &= ~BIT(BANK_PIN(i)); \
-        GPIO(BANK_PORT(i), DIR) |= BIT(BANK_PIN(i)); \
-        GPIO(BANK_PORT(i), DIR) &= ~BIT(BANK_PIN(i)); \
+        ACTUATE_SWITCH(i); \
+    } while (0);
+
+#define BANK_DISCONNECT(i) do { \
+        GPIO(BANK_PORT(i), OUT) |= BIT(BANK_PIN(i)); \
+        ACTUATE_SWITCH(i); \
     } while (0);
 
 #else // LIBCAPYBARA_SWITCH_CONTROL
@@ -48,7 +69,22 @@
 
 #elif defined(LIBCAPYBARA_SWITCH_DESIGN__NO)
 
-#error Not implemented: switch design NO
+#if defined(LIBCAPYBARA_SWITCH_CONTROL__TWO_PIN)
+#error Not implemented: switch design NO, switch control TWO PIN
+#elif defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
+
+#define BANK_CONNECT(i) do { \
+        GPIO(BANK_PORT(i), OUT) |= BIT(BANK_PIN(i)); \
+        ACTUATE_SWITCH(i); \
+    } while (0);
+
+#define BANK_DISCONNECT(i) do { \
+        GPIO(BANK_PORT(i), OUT) &= ~BIT(BANK_PIN(i)); \
+        ACTUATE_SWITCH(i); \
+    } while (0);
+
+#endif // LIBCAPYBARA_SWITCH_CONTROL
+
 #else // LIBCAPYBARA_SWITCH_DESIGN
 #error Invalid value of config option: LIBCAPYBARA_SWITCH_DESIGN
 #endif // LIBCAPYBARA_SWITCH_DESIGN
