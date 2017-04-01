@@ -6,8 +6,8 @@
 
 #include "reconfig.h"
 
-//#define SWITCH_TIME_CYCLES 8 // cycles for the latch cap to charge/discharge
-#define SWITCH_TIME_CYCLES 1024
+// Cycles for the latch cap to charge/discharge
+#define SWITCH_TIME_CYCLES 0x08ff // discharges to ~0.5v (which is sufficiently below the threshold)
 
 #if defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
 
