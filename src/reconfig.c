@@ -118,14 +118,14 @@ int capybara_config_threshold(uint16_t wiper)
     return 0;
 }
 
-int capybara_config(capybara_bankmask_t banks, uint16_t wiper)
+int capybara_config(capybara_cfg_t cfg)
 {
     int rc;
 
-    rc = capybara_config_banks(banks);
+    rc = capybara_config_banks(cfg.banks);
     if (rc) return rc;
 
-    rc = capybara_config_threshold(wiper);
+    rc = capybara_config_threshold(cfg.vth);
     if (rc) return rc;
 
     return 0;
@@ -133,5 +133,6 @@ int capybara_config(capybara_bankmask_t banks, uint16_t wiper)
 
 int capybara_config_max()
 {
-    return capybara_config(~0, POT_RESOLUTION);
+    capybara_cfg_t cfg = { ~0, POT_RESOLUTION };
+    return capybara_config(cfg);
 }
