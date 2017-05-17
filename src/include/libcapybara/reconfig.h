@@ -2,7 +2,10 @@
 #define LIBCAPYBARA_RECONFIG_H
 
 #include <stdint.h>
+
+#ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>
+#endif // LIBCAPYBARA_VARTH_ENABLED
 
 // The following is the lowest-level interface into the reconfigurable power
 // system. The units here are bank set and wiper setting, not voltage and
@@ -20,7 +23,9 @@ typedef uint8_t prechg_status_t;
 // Tuple of params that define the pwr system configuration
 typedef struct {
     capybara_bankmask_t banks;
+#ifdef LIBCAPYBARA_VARTH_ENABLED
     uint16_t vth;
+#endif // LIBCAPYBARA_VARTH_ENABLED
 } capybara_cfg_t;
 
 // Configure the power system runtime params
@@ -29,8 +34,10 @@ int capybara_config(capybara_cfg_t cfg);
 // Enable the capacitor banks specified in the bitmask
 int capybara_config_banks(capybara_bankmask_t banks);
 
+#ifdef LIBCAPYBARA_VARTH_ENABLED
 // Set threshold voltage up to which to charge capacitors (units: wiper setting)
 int capybara_config_threshold(uint16_t wiper);
+#endif // LIBCAPYBARA_VARTH_ENABLED
 
 // Configure settings that store maximum energy
 int capybara_config_max();

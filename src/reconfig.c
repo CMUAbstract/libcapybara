@@ -1,6 +1,9 @@
 #include <msp430.h>
 
+#ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>
+#endif // LIBCAPYBARA_VARTH_ENABLED
+
 #include <libmsp/periph.h>
 
 #include "reconfig.h"
@@ -110,6 +113,7 @@ int capybara_config_banks(capybara_bankmask_t banks)
     return 0;
 }
 
+#ifdef LIBCAPYBARA_VARTH_ENABLED
 int capybara_config_threshold(uint16_t wiper)
 {
     uint16_t curr_wiper = pot_get_nv_wiper();
@@ -121,6 +125,7 @@ int capybara_config_threshold(uint16_t wiper)
     }
     return 0;
 }
+#endif // LIBCAPYBARA_VARTH_ENABLED
 
 int capybara_config(capybara_cfg_t cfg)
 {
@@ -129,14 +134,20 @@ int capybara_config(capybara_cfg_t cfg)
     rc = capybara_config_banks(cfg.banks);
     if (rc) return rc;
 
+#ifdef LIBCAPYBARA_VARTH_ENABLED
     rc = capybara_config_threshold(cfg.vth);
     if (rc) return rc;
+#endif // LIBCAPYBARA_VARTH_ENABLED
 
     return 0;
 }
 
 int capybara_config_max()
 {
+#ifdef LIBCAPYBARA_VARTH_ENABLED
     capybara_cfg_t cfg = { ~0, POT_RESOLUTION };
+#else
+    capybara_cfg_t cfg = { ~0 };
+#endif // LIBCAPYBARA_VARTH_ENABLED
     return capybara_config(cfg);
 }
