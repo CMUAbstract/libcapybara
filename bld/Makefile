@@ -5,11 +5,15 @@ include ../Makefile.options
 
 OBJECTS = \
 	capybara.o \
-	reconfig.o \
 	power.o \
+
+ifneq ($(LIBCAPYBARA_SWITCH_DESIGN),)
+OBJECTS += reconfig.o
+endif # LIBCAPYBARA_SWITCH_DESIGN
 
 DEPS += \
 	libmsp \
+
 
 ifneq ($(LIBCAPYBARA_VARTH_ENABLED),)
 DEPS += libmcppot
