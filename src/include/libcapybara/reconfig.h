@@ -14,6 +14,9 @@
 // Bitmask identifying a set of capacitor banks
 typedef uint16_t capybara_bankmask_t;
 
+// Bits reporting status of a precharge operation
+typedef uint8_t prechg_status_t; 
+
 // Configure the power system runtime params
 int capybara_config(capybara_bankmask_t banks, uint16_t wiper);
 
