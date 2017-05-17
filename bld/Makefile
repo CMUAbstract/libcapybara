@@ -1,7 +1,9 @@
 LIB = libcapybara
 
 OBJECTS = \
-	reconfig.o
+	capybara.o \
+	reconfig.o \
+	power.o \
 
 DEPS += \
 	libmsp \
