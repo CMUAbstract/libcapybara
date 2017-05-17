@@ -113,8 +113,13 @@ int capybara_config_banks(capybara_bankmask_t banks)
 
 int capybara_config_threshold(uint16_t wiper)
 {
-    // TODO: read and avoid writing if value is the same to reduce wear on the EEPROM
-    pot_set_nv_wiper(wiper);
+    uint16_t curr_wiper = pot_get_nv_wiper();
+    if (curr_wiper != wiper) {
+        pot_set_nv_wiper(wiper);
+        pot_set_v_wiper(wiper); // not clear if redundant, so just in case
+    } else {
+        pot_set_v_wiper(wiper); // just in case
+    }
     return 0;
 }
 
