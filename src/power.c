@@ -1,6 +1,5 @@
 #include <msp430.h>
 
-#include <libmsp/gpio.h>
 #include <libmsp/periph.h>
 
 #include "power.h"

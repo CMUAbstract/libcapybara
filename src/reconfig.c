@@ -1,7 +1,6 @@
 #include <msp430.h>
 
 #include <libmcppot/mcp4xxx.h>
-#include <libmsp/gpio.h>
 #include <libmsp/periph.h>
 
 #include "reconfig.h"
