@@ -11,10 +11,14 @@ void capybara_wait_for_supply()
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IFG) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IE) |= BIT(LIBCAPYBARA_PIN_VBOOST_OK);
 
+    __disable_interrupt(); // classic lock-check-sleep pattern
     while ((GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IN) & BIT(LIBCAPYBARA_PIN_VBOOST_OK)) !=
                 BIT(LIBCAPYBARA_PIN_VBOOST_OK)) {
-        __bis_SR_register(LPM4_bits);
+        __bis_SR_register(LPM4_bits + GIE);
+        __disable_interrupt();
     }
+    __enable_interrupt();
+
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IE) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IFG) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
 }
