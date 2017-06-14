@@ -4,6 +4,9 @@
 // Sleep until MCU power supply stabilizes
 void capybara_wait_for_supply();
 
+// Wait for Vcap to recover after droop resulting from booster turning on
+void capybara_wait_for_vcap();
+
 // Function-macro for handling VBOOST_OK interrupt. Cannot be contained within
 // the library since library cannot own the ISR which may need to also handle
 // unrelated pins.  Defined as a macro because can only use __bi[cs]_SR

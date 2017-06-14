@@ -1,3 +1,8 @@
+# This makefile applies the options.
+# For list of options and documentation see Makefile.config
+
+include $(MAKER_ROOT)/Makefile.pre
+
 ifneq ($(LIBCAPYBARA_VARTH_ENABLED),)
 LOCAL_CFLAGS += -DLIBCAPYBARA_VARTH_ENABLED
 endif # LIBCAPYBARA_VARTH_ENABLED
@@ -8,6 +13,16 @@ LOCAL_CFLAGS += \
 	-DLIBCAPYBARA_PIN_VBOOST_OK=$(lastword $(subst ., ,$(LIBCAPYBARA_PIN_VBOOST_OK)))
 else
 $(error Port and pin for VBOOST_OK signal must be defined with LIBCAPYBARA_VBOOST_OK_PIN, e.g. '2.3')
+endif
+
+ifneq ($(LIBCAPYBARA_VCAP_RECOVERY_TIME),)
+LOCAL_CFLAGS += \
+	-DLIBCAPYBARA_VCAP_RECOVERY_TIME=$(call interval,LIBCAPYBARA_VCAP_RECOVERY_TIME,\
+			$(LIBCAPYBARA_VCAP_RECOVERY_TIME),\
+			$(call calc_int,$(CLOCK_FREQ_$(LIBMSP_SLEEP_TIMER_CLK)) / ($(LIBMSP_SLEEP_TIMER_DIV))),\
+			$(LIBMSP_SLEEP_TIMER_TICKS))
+else
+$(error Undefined config var: LIBCAPYBARA_VCAP_RECOVERY_TIME)
 endif
 
 ifneq ($(LIBCAPYBARA_PIN_BOOST_SW),)
