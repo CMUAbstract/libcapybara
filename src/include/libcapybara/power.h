@@ -1,6 +1,12 @@
 #ifndef LIBCAPYBARA_POWER_H
 #define LIBCAPYBARA_POWER_H
 
+// Some error codes
+typedef enum {
+    CB_SUCCESS = 0,
+    CB_ERROR_ALREADY_DEEPLY_DISCHARGED = 1,
+} cb_rc_t;
+
 // Sleep until MCU power supply stabilizes
 void capybara_wait_for_supply();
 
@@ -26,5 +32,10 @@ void capybara_wait_for_vcap();
 
 // Cut power to self by disabling the booster
 void capybara_shutdown();
+
+// Setup comparator to interrupt and call shutdown when Vbank drops
+// below the deep discharge threshold (see config)
+// Returns ERROR_ALREADY_DEEPLY_DISCHARGED if already below threshold when called.
+cb_rc_t capybara_shutdown_on_deep_discharge();
 
 #endif // LIBCAPYBARA_POWER_H

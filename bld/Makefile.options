@@ -1,6 +1,7 @@
 # This makefile applies the options.
 # For list of options and documentation see Makefile.config
 
+include $(MAKER_ROOT)/Makefile.msp
 include $(MAKER_ROOT)/Makefile.pre
 
 ifneq ($(LIBCAPYBARA_VARTH_ENABLED),)
@@ -59,5 +60,27 @@ LOCAL_CFLAGS += $(call port_flags,LIBCAPYBARA_BANK_PORT_3)
 endif # LIBCAPYBARA_SWITCH_CONTROL
 
 endif # LIBCAPYBARA_SWITCH_DESIGN
+
+ifeq ($(words $(LIBCAPYBARA_VBANK_COMP_CHAN) $(LIBCAPYBARA_VBANK_COMP_PIN)),2)
+override CFLAGS += $(call comp_chan_type,LIBCAPYBARA_VBANK_COMP,$(LIBCAPYBARA_VBANK_COMP_CHAN)) \
+				   $(call gpio_pin,LIBCAPYBARA_VBANK_COMP_PIN)
+else
+$(error Undefined variables: LIBCAPYBARA_VBANK_COMP_CHAN LIBCAPYBARA_VBANK_COMP_PIN)
+endif # LIBCAPYBARA_VBANK_COMP_CHAN
+
+ifneq ($(LIBCAPYBARA_DEEP_DISCHARGE),)
+override CFLAGS := $(CFLAGS) $(call comp_thres,LIBCAPYBARA_DEEP_DISCHARGE,$(LIBCAPYBARA_DEEP_DISCHARGE),\
+						  					   $(LIBCAPYBARA_VBANK_DIV),$(LIBCAPYBARA_VBANK_COMP_REF),$(COMP_TAPS))
+else
+$(error Undefined config variable: LIBCAPYBARA_DEEP_DISCHARGE)
+endif
+
+ifneq ($(LIBCAPYBARA_VBANK_COMP_SETTLE_MS),)
+override CFLAGS := $(CFLAGS) $(call interval,LIBCAPYBARA_VBANK_COMP_SETTLE,$(LIBCAPYBARA_VBANK_COMP_SETTLE_MS),\
+                                   			 $(CLOCK_FREQ_$(LIBMSP_SLEEP_TIMER_CLK)),$(LIBMSP_SLEEP_TIMER_TICKS))
+$(info CFLAGS $(CFLAGS))
+else # LIBCAPYBARA_VBANK_COMP_SETTLE_MS
+$(error Unset config variable: LIBCAPYBARA_VBANK_COMP_SETTLE_MS)
+endif # LIBCAPYBARA_VBANK_COMP_SETTLE_MS
 
 override CFLAGS += $(LOCAL_CFLAGS)
