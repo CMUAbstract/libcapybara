@@ -4,6 +4,7 @@
 #include <libmsp/sleep.h>
 
 #include "power.h"
+#include "reconfig.h" 
 
 // Shorthand
 #define COMP_VBANK(...)  COMP(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
@@ -93,6 +94,18 @@ void COMP_VBANK_ISR (void)
         case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
             COMP_VBANK(INT) &= ~COMP_VBANK(IE);
             COMP_VBANK(CTL1) &= ~COMP_VBANK(ON);
+        /*If manually issuing precharge commands*/
+        #ifdef LIBCAPYBARA_EXPLICIT_PRECHG
+            /*Check if a burst occurred*/ 
+            if(burst_status == 1){
+                /*Revert to base configuration*/ 
+                capybara_config_banks(base_config.banks);
+                /*Zero out prechg and burst statuses
+                  TODO: make this status change robust to power failures*/
+                prechg_status = 0; 
+                burst_status = 0; 
+            }
+        #endif
             capybara_shutdown();
             break;
     }

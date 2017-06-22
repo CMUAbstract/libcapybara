@@ -8,6 +8,43 @@
 
 #include "reconfig.h"
 
+/* Working config and precharged config */ 
+__nv capybara_cfg_t base_config; 
+__nv capybara_cfg_t prechg_config; 
+
+/* Precharge and Burst status globals */ 
+__nv prechg_status_t prechg_status = 0;  
+__nv burst_status_t burst_status = 0; 
+
+/*Leaving these simple for now... I can't see them ever getting too complicated, but who
+ * knows? */ 
+prechg_status_t get_prechg_status(void){
+    return (prechg_status); 
+}
+
+int set_prechg_status(prechg_status_t in){
+    prechg_status = in; 
+    return 0; 
+}
+
+burst_status_t get_burst_status(void){
+    return (burst_status); 
+}
+
+int set_burst_status(burst_status_t in){
+    burst_status = in; 
+    return 0; 
+}
+
+int set_base_banks(capybara_bankmask_t in){
+    base_config.banks = in;
+    return 0; 
+}
+
+int set_prechg_banks(capybara_bankmask_t in){
+    prechg_config.banks = in;
+    return 0; 
+}
 // Cycles for the latch cap to charge/discharge
 #define SWITCH_TIME_CYCLES 0x1fff // charges to ~2.4v (almost full-scale); discharges to <100mV
 
@@ -107,8 +144,8 @@ int capybara_config_banks(capybara_bankmask_t banks)
 
     CONFIG_BANK(0);
     CONFIG_BANK(1);
-    CONFIG_BANK(2);
-    CONFIG_BANK(3);
+    //CONFIG_BANK(2);
+    //CONFIG_BANK(3);
 
     return 0;
 }
