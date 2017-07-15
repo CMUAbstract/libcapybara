@@ -117,7 +117,7 @@ capybara_cfg_t pwr_levels[] = {
     } while (0);
 
 #define BANK_DISCONNECT(i) do { \
-        GPIO(BANK_PORT(i, OPEN), OUT) &= ~BIT(BANK_PIN(i, OPEN)); \
+        GPIO(BANK_PORT(i, OPEN), OUT) |= BIT(BANK_PIN(i, OPEN)); \
         ACTUATE_SWITCH(i, OPEN); \
     } while (0);
 
