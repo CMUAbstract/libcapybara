@@ -4,6 +4,7 @@
 #include <libmsp/sleep.h>
 
 #include "power.h"
+#include "reconfig.h" 
 
 // Shorthand
 #define COMP_VBANK(...)  COMP(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
@@ -26,6 +27,31 @@ void capybara_wait_for_supply()
 
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IE) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IFG) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
+}
+
+void capybara_wait_for_banks()
+{
+    // wait for VBANK_OK: cap voltage is high enough
+    GPIO(LIBCAPYBARA_PORT_VBANK_OK, IES) &= ~BIT(LIBCAPYBARA_PIN_VBANK_OK);
+    GPIO(LIBCAPYBARA_PORT_VBANK_OK, IFG) &= ~BIT(LIBCAPYBARA_PIN_VBANK_OK);
+    GPIO(LIBCAPYBARA_PORT_VBANK_OK, IE) |= BIT(LIBCAPYBARA_PIN_VBANK_OK);
+
+    __disable_interrupt(); // classic lock-check-sleep pattern
+    while ((GPIO(LIBCAPYBARA_PORT_VBANK_OK, IN) & BIT(LIBCAPYBARA_PIN_VBANK_OK)) !=
+                BIT(LIBCAPYBARA_PIN_VBANK_OK)) {
+        __bis_SR_register(LPM4_bits + GIE);
+        __disable_interrupt();
+    }
+    __enable_interrupt();
+
+    GPIO(LIBCAPYBARA_PORT_VBANK_OK, IE) &= ~BIT(LIBCAPYBARA_PIN_VBANK_OK);
+    GPIO(LIBCAPYBARA_PORT_VBANK_OK, IFG) &= ~BIT(LIBCAPYBARA_PIN_VBANK_OK);
+}
+
+int capybara_report_vbank_ok()
+{   int vbank_ok_val = 0;  
+    vbank_ok_val = GPIO(LIBCAPYBARA_PORT_VBANK_OK,IN) & BIT(LIBCAPYBARA_PIN_VBANK_OK); 
+    return vbank_ok_val; 
 }
 
 void capybara_wait_for_vcap()
@@ -79,6 +105,21 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
     // Clear int flag and enable int
     COMP_VBANK(INT) &= ~(COMP_VBANK(IFG) | COMP_VBANK(IIFG));
     COMP_VBANK(INT) |= COMP_VBANK(IE);
+    // If manually issuing precharge commands
+    #ifdef LIBCAPYBARA_EXPLICIT_PRECHG
+        // Check if a burst completed 
+        if(burst_status == 2){
+            // Revert to base configuration
+            capybara_config_banks(base_config.banks);
+        }
+        // Check if a burst started, and did not complete
+        //This may not be strictly necessary, but for now, leave it please
+        // :) 
+        else if(burst_status == 1){
+            capybara_config_banks(prechg_config.banks); 
+        }
+        //Otherwise we stay in whatever config we had before
+    #endif
 
     return CB_SUCCESS;
 }
@@ -93,6 +134,21 @@ void COMP_VBANK_ISR (void)
         case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
             COMP_VBANK(INT) &= ~COMP_VBANK(IE);
             COMP_VBANK(CTL1) &= ~COMP_VBANK(ON);
+        // If manually issuing precharge commands
+        #ifdef LIBCAPYBARA_EXPLICIT_PRECHG
+            // Check if a burst completed 
+            if(burst_status == 2){
+                // Revert to base configuration
+                capybara_config_banks(base_config.banks);
+            }
+            // Check if a burst started, and did not complete
+            //This may not be strictly necessary, but for now, leave it please
+            // :) 
+            else if(burst_status == 1){
+                capybara_config_banks(prechg_config.banks); 
+            }
+            //Otherwise we stay in whatever config we had before
+        #endif
             capybara_shutdown();
             break;
     }
