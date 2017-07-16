@@ -175,8 +175,8 @@ int capybara_config_banks(capybara_bankmask_t banks)
 
     CONFIG_BANK(0);
     CONFIG_BANK(1);
-    //CONFIG_BANK(2);
-    //CONFIG_BANK(3);
+    CONFIG_BANK(2);
+    CONFIG_BANK(3);
 
     return 0;
 }
