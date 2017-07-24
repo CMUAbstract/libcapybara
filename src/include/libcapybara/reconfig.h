@@ -2,7 +2,6 @@
 #define LIBCAPYBARA_RECONFIG_H
 
 #include <stdint.h>
-#include <libmsp/mem.h> 
 
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>

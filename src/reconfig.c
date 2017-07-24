@@ -5,6 +5,7 @@
 #endif // LIBCAPYBARA_VARTH_ENABLED
 
 #include <libmsp/periph.h>
+#include <libmsp/mem.h>
 
 #include "reconfig.h"
 
