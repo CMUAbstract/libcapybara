@@ -78,7 +78,7 @@ capybara_cfg_t pwr_levels[] = {
 };
 
 // Cycles for the latch cap to charge/discharge
-#define SWITCH_TIME_CYCLES 0x1fff // charges to ~2.4v (almost full-scale); discharges to <100mV
+#define SWITCH_TIME_CYCLES 6400 // charges to ~2.2v
 
 #if defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
 
