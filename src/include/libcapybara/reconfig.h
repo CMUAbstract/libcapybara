@@ -50,10 +50,13 @@ typedef enum {
 X(LOWP,    0x0, 2.5) \
 X(MEDLOWP, 0x1, 2.5) \
 X(MEDP ,   0x3, 2.5) \
+X(MEDP2,   0x5, 2.5) \
 X(MEDHIGHP,0x7, 2.5) \
 X(HIGHP,   0xF, 2.5) \
+X(BACKP,   0xC, 2.5) \
+X(BACK3P,  0xE, 2.5) \
 
-#define X(a, b, c) a, 
+#define X(a, b, c) a,
 typedef enum {
     PWR_LEVEL_TABLE
     #undef X
