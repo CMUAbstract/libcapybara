@@ -15,6 +15,13 @@
 #define CAPYBARA_NUM_BANKS 4
 #define CAPYBARA_MAX_THRES POT_RESOLUTION // wiper settings
 
+#define CAPYBARA_CFG_TABLE(N) \
+capybara_task_cfg_t pwr_configs[N]
+
+#define CFG_ROW(ind,type,opcfg,precfg) {ind,type,pwr_levels + opcfg, pwr_levels+ precfg}
+
+    
+    //{.ind = ind, .type = type, .opcfg =  opcfg, .precfg = precfg} 
 // Bitmask identifying a set of capacitor banks
 typedef uint16_t capybara_bankmask_t;
 
@@ -46,6 +53,16 @@ typedef enum {
     PREBURST,
 } capybara_cfg_spec_t;
 
+// Tuple of params, including index and type, that define the configuration for
+// a given task
+typedef struct {
+    uint8_t ind;
+    capybara_cfg_spec_t type;
+    capybara_cfg_t *opcfg;
+    capybara_cfg_t *precfg;
+} capybara_task_cfg_t;
+
+
 #define PWR_LEVEL_TABLE \
 X(LOWP,    0x0, 2.5) \
 X(MEDLOWP, 0x1, 2.5) \
@@ -62,9 +79,9 @@ typedef enum {
     #undef X
 } capybara_pwr_level_t; 
 
+extern capybara_task_cfg_t pwr_configs[];
 extern capybara_cfg_t base_config; 
 extern capybara_cfg_t prechg_config; 
-
 // Configure the power system runtime params
 int capybara_config(capybara_cfg_t cfg);
 
@@ -94,5 +111,9 @@ int set_burst_status(burst_status_t);
 // Set the precharge status info so on next transition or power on, the
 // precharge happens
 int issue_precharge(capybara_bankmask_t cfg);
+
+// Function to change the capybara power system configuration after
+// transitioning to a new task
+void capybara_transition(void);
 
 #endif // LIBCAPYBARA_RECONFIG_H

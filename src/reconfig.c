@@ -1,12 +1,16 @@
 #include <msp430.h>
 
+#define PWRCFG RECFG
+
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>
 #endif // LIBCAPYBARA_VARTH_ENABLED
 
 #include <libmsp/periph.h>
+#include <libchain/chain.h>
 
 #include "reconfig.h"
+#include "power.h"
 
 /* Working config and precharged config */ 
 #ifdef LIBCAPYBARA_VARTH_ENABLED
@@ -227,3 +231,53 @@ int capybara_config_max()
 #endif // LIBCAPYBARA_VARTH_ENABLED
     return capybara_config(cfg);
 }
+
+void capybara_transition()
+{
+    // need to explore exactly how we want BURST tasks to be followed --> should
+    // we ever shutdown to reconfigure? Or should we always ride the burst wave
+    // until we're out of energy?
+#if (PWRCFG == PRECHRG) || (PWRCFG == RECFG) || (PWRCFG == TEST)
+
+    // Check previous burst state and register a finished burst
+    if(burst_status){
+        burst_status = 2;
+    }
+    capybara_task_cfg_t *cur = pwr_configs + curctx->task->idx ; 
+    capybara_cfg_spec_t curpwrcfg = cur->type;
+    switch(curpwrcfg){
+        case BURST:
+            prechg_status = 0;
+            capybara_config_banks(prechg_config.banks);
+            burst_status = 1;
+            break;
+
+        case PREBURST:
+            if(!prechg_status){
+                prechg_config.banks = cur->precfg->banks;
+                capybara_config_banks(prechg_config.banks);
+                // Mark that we finished the config_banks_command
+                prechg_status = 1;
+                capybara_shutdown();
+                capybara_wait_for_supply();
+            }
+            //intentional fall through
+
+        case CONFIGD:
+
+            if(base_config.banks != cur->opcfg->banks){
+                base_config.banks = cur->opcfg->banks;
+                // Check if we want to burn the rest of our energy before recharging
+                capybara_config_banks(base_config.banks);
+                capybara_wait_for_supply();
+            }
+            //Another intentional fall through
+
+        default:
+            break;
+    }
+#endif
+   //LOG("Running task %u \r\n",curctx->task->idx);
+
+}
+
