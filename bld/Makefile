@@ -15,10 +15,21 @@ endif # LIBCAPYBARA_SWITCH_DESIGN
 DEPS += \
 	libmsp \
   libmspware\
-  libmspuartlink\
   libio\
   libfxl\
-  libchain \
+
+ifeq ($(RUNTIME), CHAIN)
+DEPS += libchain
+endif
+
+ifeq ($(RUNTIME), ALPACA)
+DEPS += libalpaca
+endif
+
+ifeq ($(RUNTIME), TAPIR)
+DEPS += libtapir
+endif
+  #libmspuartlink\
 
 ifneq ($(LIBCAPYBARA_VARTH_ENABLED),)
 DEPS += libmcppot
@@ -27,5 +38,6 @@ endif
 override SRC_ROOT = ../../src
 
 override CFLAGS += \
-	-I$(SRC_ROOT)/include \
+  -DCHAIN \
+  -I$(SRC_ROOT)/include \
 	-I$(SRC_ROOT)/include/$(LIB) \

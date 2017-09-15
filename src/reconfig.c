@@ -7,7 +7,13 @@
 #endif // LIBCAPYBARA_VARTH_ENABLED
 
 #include <libmsp/periph.h>
+#ifdef CHAIN
 #include <libchain/chain.h>
+#elif ALPACA
+#include <libtapir/alpaca.h>
+#elif TAPIR
+#include <libchain/chain.h>
+#endif
 
 #include "reconfig.h"
 #include "power.h"
