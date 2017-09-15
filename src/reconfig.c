@@ -10,9 +10,9 @@
 #ifdef CHAIN
 #include <libchain/chain.h>
 #elif ALPACA
-#include <libtapir/alpaca.h>
+#include <libalpaca/alpaca.h>
 #elif TAPIR
-#include <libchain/chain.h>
+#include <libtapir/tapir.h>
 #endif
 
 #include "reconfig.h"
