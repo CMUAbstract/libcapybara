@@ -9,7 +9,7 @@
 #include <libmsp/sleep.h>
 #include <libmsp/mem.h>
 #include <libmsp/uart.h>
-#include <libmspuartlink/uartlink.h>
+//#include <libmspuartlink/uartlink.h>
 
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 1
 #include <libfxl/fxl6408.h>
