@@ -114,6 +114,6 @@ int issue_precharge(capybara_bankmask_t cfg);
 
 // Function to change the capybara power system configuration after
 // transitioning to a new task
-void capybara_transition(void);
+void capybara_transition(int);
 
 #endif // LIBCAPYBARA_RECONFIG_H

@@ -5,16 +5,10 @@
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>
 #endif // LIBCAPYBARA_VARTH_ENABLED
-
+#include <libmspware/driverlib.h>
 #include <libmsp/periph.h>
-#ifdef CHAIN
-#include <libchain/chain.h>
-#elif ALPACA
-#include <libtapir/alpaca.h>
-#elif TAPIR
-#include <libchain/chain.h>
-#endif
-
+#include <libmsp/mem.h>
+#include <libmsp/gpio.h>
 #include "reconfig.h"
 #include "power.h"
 
@@ -238,7 +232,7 @@ int capybara_config_max()
     return capybara_config(cfg);
 }
 
-void capybara_transition()
+void capybara_transition(int index)
 {
     // need to explore exactly how we want BURST tasks to be followed --> should
     // we ever shutdown to reconfigure? Or should we always ride the burst wave
@@ -249,7 +243,7 @@ void capybara_transition()
     if(burst_status){
         burst_status = 2;
     }
-    capybara_task_cfg_t *cur = pwr_configs + curctx->task->idx ; 
+    capybara_task_cfg_t *cur = pwr_configs + index ; 
     capybara_cfg_spec_t curpwrcfg = cur->type;
     switch(curpwrcfg){
         case BURST:

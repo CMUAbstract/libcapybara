@@ -13,23 +13,11 @@ OBJECTS += reconfig.o
 endif # LIBCAPYBARA_SWITCH_DESIGN
 
 DEPS += \
-	libmsp \
   libmspware\
+	libmsp \
   libio\
   libfxl\
 
-ifeq ($(RUNTIME), CHAIN)
-DEPS += libchain
-endif
-
-ifeq ($(RUNTIME), ALPACA)
-DEPS += libalpaca
-endif
-
-ifeq ($(RUNTIME), TAPIR)
-DEPS += libtapir
-endif
-  #libmspuartlink\
 
 ifneq ($(LIBCAPYBARA_VARTH_ENABLED),)
 DEPS += libmcppot
