@@ -6,6 +6,7 @@
 #include <libmcppot/mcp4xxx.h>
 #endif // LIBCAPYBARA_VARTH_ENABLED
 #include <libmspware/driverlib.h>
+#include <libmspbuiltins/builtins.h>
 #include <libmsp/periph.h>
 #include <libmsp/mem.h>
 #include <libmsp/gpio.h>
