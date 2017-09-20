@@ -2,6 +2,7 @@ LIB = libcapybara
 
 include ../Makefile.config
 include ../Makefile.options
+include ../Makefile.target
 
 OBJECTS = \
 	capybara.o \
