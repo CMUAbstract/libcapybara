@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <libmspware/driverlib.h>
 
+#define PWRCFG CNT
+#define CNTPWR
+
 #include <libmsp/watchdog.h>
 #include <libmsp/clock.h>
 #include <libmsp/gpio.h>
@@ -21,7 +24,11 @@
 #include "power.h"
 #include "capybara.h"
 #include "capy_board_init.h"
-
+#define STRINGIFY(x) XSTRINGIFY(x)
+#define XSTRINGIFY(x) #x
+#pragma message ("MAJOR = " STRINGIFY(BOARD_MAJOR))
+#pragma message ("MINOR = " STRINGIFY(BOARD_MINOR))
+#pragma message ("VERBOSE = " STRINGIFY(VERBOSE))
 /** @brief Handler for capybara power-on sequence
     TODO add this to libcapybara...
 */
@@ -65,13 +72,20 @@ void capy_board_init(void) {
     GPIO(PORT_DEBUG, OUT) &= ~BIT(PIN_DEBUG);
     GPIO(PORT_DEBUG, DIR) |= BIT(PIN_DEBUG);
 #elif BOARD_MAJOR == 1 && BOARD_MINOR == 1
+		P3OUT |= BIT7;
+		P3DIR |= BIT7;
 
     INIT_CONSOLE();
-    LOG2("i2c init\r\n");
+    __enable_interrupt();
+    while(1){
+			LOG("Printing printing\r\n");
+		}
+		LOG2("i2c init\r\n");
+		//P3OUT |= BIT6;
+		//P3DIR |= BIT6;
     i2c_setup();
     LOG2("fxl init\r\n");
     fxl_init();
-
     LOG2("RADIO_SW\r\n");
 
     fxl_out(BIT_PHOTO_SW);

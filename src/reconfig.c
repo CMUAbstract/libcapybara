@@ -1,6 +1,7 @@
 #include <msp430.h>
 
-#define PWRCFG RECFG
+#define PWRCFG CNT
+#define CNTPWR
 
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>
