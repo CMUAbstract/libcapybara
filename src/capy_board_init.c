@@ -35,7 +35,6 @@
 void capy_board_init(void) {
     msp_watchdog_disable();
     msp_gpio_unlock();
-    __enable_interrupt();
 // Don't wait if we're on continuous power
 #ifndef CNTPWR
     capybara_wait_for_supply();
@@ -72,17 +71,13 @@ void capy_board_init(void) {
     GPIO(PORT_DEBUG, OUT) &= ~BIT(PIN_DEBUG);
     GPIO(PORT_DEBUG, DIR) |= BIT(PIN_DEBUG);
 #elif BOARD_MAJOR == 1 && BOARD_MINOR == 1
-		P3OUT |= BIT7;
-		P3DIR |= BIT7;
 
     INIT_CONSOLE();
     __enable_interrupt();
     while(1){
-			LOG("Printing printing\r\n");
-		}
-		LOG2("i2c init\r\n");
-		//P3OUT |= BIT6;
-		//P3DIR |= BIT6;
+        PRINTF("Printing printing\r\n");
+    }
+    LOG2("i2c init\r\n");
     i2c_setup();
     LOG2("fxl init\r\n");
     fxl_init();
