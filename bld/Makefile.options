@@ -28,6 +28,13 @@ else
 $(error Port and pin for VBank1 signal must be defined with LIBCAPYBARA_PIN_VB1_DIV, e.g. '2.3')
 endif
 
+ifeq ($(LIBCAPYBARA_CONT_POWER),1)
+LOCAL_CFLAGS += -DLIBCAPYBARA_CONT_POWER
+else 
+	ifeq ($(LIBCAPYBARA_CONT_POWER),)
+  $(error Power availability must be specified for capybara with LIBCAPYBARA_CONT_POWER = 1 or 0)
+  endif
+endif
 
 ifneq ($(LIBCAPYBARA_PIN_VBANK_OK),)
 LOCAL_CFLAGS += \

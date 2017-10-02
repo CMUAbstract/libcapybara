@@ -1,7 +1,5 @@
 #include <msp430.h>
 
-#define PWRCFG CNT
-#define CNTPWR
 
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>
@@ -239,7 +237,7 @@ void capybara_transition(int index)
     // need to explore exactly how we want BURST tasks to be followed --> should
     // we ever shutdown to reconfigure? Or should we always ride the burst wave
     // until we're out of energy?
-#if (PWRCFG == PRECHRG) || (PWRCFG == RECFG) || (PWRCFG == TEST)
+#ifndef LIBCAPYBARA_CONT_POWER
 
     // Check previous burst state and register a finished burst
     if(burst_status){

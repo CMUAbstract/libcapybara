@@ -2,9 +2,6 @@
 #include <stdio.h>
 #include <libmspware/driverlib.h>
 
-#define PWRCFG CNT
-#define CNTPWR
-
 #include <libmsp/watchdog.h>
 #include <libmsp/clock.h>
 #include <libmsp/gpio.h>
@@ -26,6 +23,7 @@
 #include "capy_board_init.h"
 #define STRINGIFY(x) XSTRINGIFY(x)
 #define XSTRINGIFY(x) #x
+
 #pragma message ("MAJOR = " STRINGIFY(BOARD_MAJOR))
 #pragma message ("MINOR = " STRINGIFY(BOARD_MINOR))
 #pragma message ("VERBOSE = " STRINGIFY(VERBOSE))
@@ -35,17 +33,19 @@
 void capy_board_init(void) {
     msp_watchdog_disable();
     msp_gpio_unlock();
+		__enable_interrupt();
 // Don't wait if we're on continuous power
-#ifndef CNTPWR
-    capybara_wait_for_supply();
+#ifndef LIBCAPYBARA_CONT_POWER
+#pragma message ("continuous power not defined!")
+capybara_wait_for_supply();
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 1
     capybara_wait_for_vcap();
 #endif // BOARD_{MAJOR,MINOR}
-#endif // CNTPWR
+#endif // LIBCAPYBARA_CONT_POWER
     capybara_config_pins();
     msp_clock_setup();
 // Set up deep_discharge stop
-#ifndef CNTPWR
+#ifndef LIBCAPYBARA_CONT_POWER
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 0
     capybara_shutdown_on_deep_discharge();
 #elif BOARD_MAJOR == 1 && BOARD_MINOR == 1
@@ -54,7 +54,7 @@ void capy_board_init(void) {
         capybara_shutdown();
     }
 #endif //BOARD.{MAJOR,MINOR}
-#endif //CNTPWR
+#endif //LIBCAPYBARA_CONT_POWER
 
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 0
     GPIO(PORT_SENSE_SW, OUT) &= ~BIT(PIN_SENSE_SW);
@@ -73,11 +73,10 @@ void capy_board_init(void) {
 #elif BOARD_MAJOR == 1 && BOARD_MINOR == 1
 
     INIT_CONSOLE();
-    __enable_interrupt();
-    while(1){
-        PRINTF("Printing printing\r\n");
-    }
-    LOG2("i2c init\r\n");
+    //__enable_interrupt();
+    //PRINTF("Printing printing\r\n");
+    //msp_gpio_unlock();
+    /*LOG2("i2c init\r\n");
     i2c_setup();
     LOG2("fxl init\r\n");
     fxl_init();
@@ -88,7 +87,8 @@ void capy_board_init(void) {
     fxl_out(BIT_RADIO_RST);
     fxl_out(BIT_APDS_SW);
     fxl_pull_up(BIT_CCS_WAKE);
-    // SENSE_SW is present but is not electrically correct: do not use.
+    */
+		// SENSE_SW is present but is not electrically correct: do not use.
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
 #endif // BOARD_{MAJOR,MINOR}
@@ -106,14 +106,20 @@ void i2c_setup(void) {
     GPIO_PIN6 + GPIO_PIN7,
     GPIO_SECONDARY_MODULE_FUNCTION
   );
-
+/*
+	LOG2("In i2c init\r\n");
+  LOG2("In i2c init\r\n");
+  LOG2("In i2c init\r\n");
+*/
   EUSCI_B_I2C_initMasterParam param = {0};
   param.selectClockSource = EUSCI_B_I2C_CLOCKSOURCE_SMCLK;
   param.i2cClk = CS_getSMCLK();
   param.dataRate = EUSCI_B_I2C_SET_DATA_RATE_400KBPS;
   param.byteCounterThreshold = 0;
   param.autoSTOPGeneration = EUSCI_B_I2C_NO_AUTO_STOP;
+  //LOG2("In i2c init\r\n");
 
   EUSCI_B_I2C_initMaster(EUSCI_B0_BASE, &param);
+  //LOG2("In i2c init\r\n");
 }
 

@@ -20,7 +20,7 @@ void capybara_wait_for_supply()
     __disable_interrupt(); // classic lock-check-sleep pattern
     while ((GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IN) & BIT(LIBCAPYBARA_PIN_VBOOST_OK)) !=
                 BIT(LIBCAPYBARA_PIN_VBOOST_OK)) {
-        __bis_SR_register(LPM4_bits + GIE);
+				__bis_SR_register(LPM4_bits + GIE);
         __disable_interrupt();
     }
     __enable_interrupt();
@@ -130,8 +130,8 @@ void COMP_VBANK_ISR (void)
 {
     switch (__even_in_range(COMP_VBANK(IV), 0x4)) {
         case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IIFG):
-            break;
-        case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
+						break;
+   /*     case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
             COMP_VBANK(INT) &= ~COMP_VBANK(IE);
             COMP_VBANK(CTL1) &= ~COMP_VBANK(ON);
         // If manually issuing precharge commands
@@ -151,5 +151,11 @@ void COMP_VBANK_ISR (void)
         #endif
             capybara_shutdown();
             break;
+		*/
     }
 }
+
+__attribute__((section("__interrupt_vector_comp_e"),aligned(2)))
+void(*__vector_compe_e)(void) = COMP_VBANK_ISR;
+
+
