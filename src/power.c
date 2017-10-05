@@ -7,14 +7,21 @@
 void capybara_wait_for_supply()
 {
     // wait for BOOST_OK: supply voltage stablized
+
+    // classic lock-wait-lock pattern
+    __disable_interrupt();
+
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IES) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IFG) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IE) |= BIT(LIBCAPYBARA_PIN_VBOOST_OK);
 
     while ((GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IN) & BIT(LIBCAPYBARA_PIN_VBOOST_OK)) !=
                 BIT(LIBCAPYBARA_PIN_VBOOST_OK)) {
-        __bis_SR_register(LPM4_bits);
+        __bis_SR_register(LPM4_bits | GIE);
+        __disable_interrupt();
     }
+    __enable_interrupt();
+
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IE) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IFG) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
 }
