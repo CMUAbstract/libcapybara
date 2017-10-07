@@ -4,7 +4,7 @@
 #include <libmsp/sleep.h>
 
 #include "power.h"
-#include "reconfig.h" 
+#include "reconfig.h"
 
 // Shorthand
 #define COMP_VBANK(...)  COMP(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
@@ -105,22 +105,6 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
     // Clear int flag and enable int
     COMP_VBANK(INT) &= ~(COMP_VBANK(IFG) | COMP_VBANK(IIFG));
     COMP_VBANK(INT) |= COMP_VBANK(IE);
-    // If manually issuing precharge commands
-    #ifdef LIBCAPYBARA_EXPLICIT_PRECHG
-        // Check if a burst completed 
-        if(burst_status == 2){
-            // Revert to base configuration
-            capybara_config_banks(base_config.banks);
-        }
-        // Check if a burst started, and did not complete
-        //This may not be strictly necessary, but for now, leave it please
-        // :) 
-        else if(burst_status == 1){
-            capybara_config_banks(prechg_config.banks); 
-        }
-        //Otherwise we stay in whatever config we had before
-    #endif
-
     return CB_SUCCESS;
 }
 
@@ -131,31 +115,15 @@ void COMP_VBANK_ISR (void)
     switch (__even_in_range(COMP_VBANK(IV), 0x4)) {
         case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IIFG):
 						break;
-   /*     case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
+        case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
             COMP_VBANK(INT) &= ~COMP_VBANK(IE);
             COMP_VBANK(CTL1) &= ~COMP_VBANK(ON);
-        // If manually issuing precharge commands
-        #ifdef LIBCAPYBARA_EXPLICIT_PRECHG
-            // Check if a burst completed 
-            if(burst_status == 2){
-                // Revert to base configuration
-                capybara_config_banks(base_config.banks);
-            }
-            // Check if a burst started, and did not complete
-            //This may not be strictly necessary, but for now, leave it please
-            // :) 
-            else if(burst_status == 1){
-                capybara_config_banks(prechg_config.banks); 
-            }
-            //Otherwise we stay in whatever config we had before
-        #endif
             capybara_shutdown();
             break;
-		*/
     }
 }
-
+#ifndef __GCC__
 __attribute__((section("__interrupt_vector_comp_e"),aligned(2)))
 void(*__vector_compe_e)(void) = COMP_VBANK_ISR;
-
+#endif //GCC
 

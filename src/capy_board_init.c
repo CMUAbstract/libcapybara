@@ -49,7 +49,7 @@ capybara_wait_for_supply();
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 0
     capybara_shutdown_on_deep_discharge();
 #elif BOARD_MAJOR == 1 && BOARD_MINOR == 1
-    capybara_wait_for_supply();
+		capybara_wait_for_supply();
     if (capybara_shutdown_on_deep_discharge() == CB_ERROR_ALREADY_DEEPLY_DISCHARGED) {
         capybara_shutdown();
     }
@@ -73,10 +73,9 @@ capybara_wait_for_supply();
 #elif BOARD_MAJOR == 1 && BOARD_MINOR == 1
 
     INIT_CONSOLE();
-    //__enable_interrupt();
-    //PRINTF("Printing printing\r\n");
-    //msp_gpio_unlock();
-    /*LOG2("i2c init\r\n");
+    __enable_interrupt();
+    msp_gpio_unlock();
+    LOG2("i2c init\r\n");
     i2c_setup();
     LOG2("fxl init\r\n");
     fxl_init();
@@ -87,7 +86,6 @@ capybara_wait_for_supply();
     fxl_out(BIT_RADIO_RST);
     fxl_out(BIT_APDS_SW);
     fxl_pull_up(BIT_CCS_WAKE);
-    */
 		// SENSE_SW is present but is not electrically correct: do not use.
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
