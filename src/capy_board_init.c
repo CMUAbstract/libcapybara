@@ -75,8 +75,8 @@ capybara_wait_for_supply();
     INIT_CONSOLE();
     __enable_interrupt();
     msp_gpio_unlock();
-    LOG2("i2c init\r\n");
-    i2c_setup();
+    //LOG2("i2c init\r\n");
+   /* i2c_setup();
     LOG2("fxl init\r\n");
     fxl_init();
     LOG2("RADIO_SW\r\n");
@@ -86,6 +86,7 @@ capybara_wait_for_supply();
     fxl_out(BIT_RADIO_RST);
     fxl_out(BIT_APDS_SW);
     fxl_pull_up(BIT_CCS_WAKE);
+		*/
 		// SENSE_SW is present but is not electrically correct: do not use.
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
@@ -104,12 +105,9 @@ void i2c_setup(void) {
     GPIO_PIN6 + GPIO_PIN7,
     GPIO_SECONDARY_MODULE_FUNCTION
   );
-/*
-	LOG2("In i2c init\r\n");
-  LOG2("In i2c init\r\n");
-  LOG2("In i2c init\r\n");
-*/
-  EUSCI_B_I2C_initMasterParam param = {0};
+	//LOG2("In i2c init\r\n");
+
+	EUSCI_B_I2C_initMasterParam param = {0};
   param.selectClockSource = EUSCI_B_I2C_CLOCKSOURCE_SMCLK;
   param.i2cClk = CS_getSMCLK();
   param.dataRate = EUSCI_B_I2C_SET_DATA_RATE_400KBPS;
@@ -118,6 +116,6 @@ void i2c_setup(void) {
   //LOG2("In i2c init\r\n");
 
   EUSCI_B_I2C_initMaster(EUSCI_B0_BASE, &param);
-  //LOG2("In i2c init\r\n");
+  LOG2("In i2c init\r\n");
 }
 
