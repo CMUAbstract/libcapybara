@@ -75,7 +75,8 @@ capybara_wait_for_supply();
     INIT_CONSOLE();
     __enable_interrupt();
     msp_gpio_unlock();
-    LOG2("i2c init\r\n");
+
+		LOG2("i2c init\r\n");
     i2c_setup();
     LOG2("fxl init\r\n");
     fxl_init();
@@ -86,6 +87,7 @@ capybara_wait_for_supply();
     fxl_out(BIT_RADIO_RST);
     fxl_out(BIT_APDS_SW);
     fxl_pull_up(BIT_CCS_WAKE);
+
 		// SENSE_SW is present but is not electrically correct: do not use.
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
