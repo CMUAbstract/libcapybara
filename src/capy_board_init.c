@@ -24,9 +24,6 @@
 #define STRINGIFY(x) XSTRINGIFY(x)
 #define XSTRINGIFY(x) #x
 
-#pragma message ("MAJOR = " STRINGIFY(BOARD_MAJOR))
-#pragma message ("MINOR = " STRINGIFY(BOARD_MINOR))
-#pragma message ("VERBOSE = " STRINGIFY(VERBOSE))
 /** @brief Handler for capybara power-on sequence
     TODO add this to libcapybara...
 */
