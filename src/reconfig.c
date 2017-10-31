@@ -4,8 +4,13 @@
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>
 #endif // LIBCAPYBARA_VARTH_ENABLED
+
 #include <libmspware/driverlib.h>
+
+#ifndef GCC
 #include <libmspbuiltins/builtins.h>
+#endif //GCC
+
 #include <libmsp/periph.h>
 #include <libmsp/mem.h>
 #include <libmsp/gpio.h>
