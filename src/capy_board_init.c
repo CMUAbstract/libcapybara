@@ -72,7 +72,8 @@ capybara_wait_for_supply();
     INIT_CONSOLE();
     __enable_interrupt();
     msp_gpio_unlock();
-    i2c_setup();
+    /*i2c_setup();
+    printf("fxl init\r\n");
     LOG2("fxl init\r\n");
     fxl_init();
     LOG2("RADIO_SW\r\n");
@@ -81,7 +82,7 @@ capybara_wait_for_supply();
     fxl_out(BIT_RADIO_SW);
     fxl_out(BIT_RADIO_RST);
     fxl_out(BIT_APDS_SW);
-    fxl_pull_up(BIT_CCS_WAKE);
+    fxl_pull_up(BIT_CCS_WAKE);*/
 		// SENSE_SW is present but is not electrically correct: do not use.
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
