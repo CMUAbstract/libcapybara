@@ -5,6 +5,10 @@
 #include <libmcppot/mcp4xxx.h>
 #endif // LIBCAPYBARA_VARTH_ENABLED
 
+#ifdef __clang__
+#include <libmspbuiltins/builtins.h>
+#endif // __clang__
+
 #include <libmspware/driverlib.h>
 
 #include <libmsp/periph.h>
