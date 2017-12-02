@@ -7,10 +7,6 @@
 
 #include <libmspware/driverlib.h>
 
-#ifndef GCC
-#include <libmspbuiltins/builtins.h>
-#endif //GCC
-
 #include <libmsp/periph.h>
 #include <libmsp/mem.h>
 #include <libmsp/gpio.h>
