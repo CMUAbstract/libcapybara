@@ -125,8 +125,7 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
 }
 
 // Own the ISR for now, if need be can make a function, to let main own the ISR
-__attribute__ ((interrupt(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))))
-void COMP_VBANK_ISR (void)
+ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 {
     switch (__even_in_range(COMP_VBANK(IV), 0x4)) {
         case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IIFG):
