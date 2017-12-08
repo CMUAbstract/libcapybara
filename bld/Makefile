@@ -4,14 +4,15 @@ include ../Makefile.config
 include ../Makefile.options
 include ../Makefile.target
 
-OBJECTS = \
+OBJECTS += \
+  capy_board_init.o \
 	capybara.o \
 	power.o \
-  capy_board_init.o \
 
-ifeq ($(TOOLCHAIN),gcc)
+ifeq ($(TOOLCHAIN),$(filter $(TOOLCHAIN), gcc coatigcc))
 $(info toolchain = gcc)
 DEPS += libmspware
+
 else
 $(info lib_root = $(LIB_ROOT))
 CFLAGS += -I$(LIB_ROOT)/libmspware/src/include
@@ -25,8 +26,8 @@ OBJECTS += reconfig.o
 endif # LIBCAPYBARA_SWITCH_DESIGN
 
 DEPS += \
+  libmsp \
   libmspware\
-	libmsp \
   libio\
   libfxl\
 
@@ -39,5 +40,6 @@ override SRC_ROOT = ../../src
 
 override CFLAGS += \
   -DCHAIN \
+  -I$(SRC_ROOT)/ \
   -I$(SRC_ROOT)/include \
 	-I$(SRC_ROOT)/include/$(LIB) \
