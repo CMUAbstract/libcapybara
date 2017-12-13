@@ -122,7 +122,7 @@ void COMP_VBANK_ISR (void)
             break;
     }
 }
-#ifndef GCC
+#ifndef __GNUC__
 __attribute__((section("__interrupt_vector_comp_e"),aligned(2)))
 void(*__vector_compe_e)(void) = COMP_VBANK_ISR;
 #endif //GCC
