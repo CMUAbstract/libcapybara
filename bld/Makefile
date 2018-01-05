@@ -11,13 +11,21 @@ OBJECTS += \
 
 ifeq ($(TOOLCHAIN),$(filter $(TOOLCHAIN), gcc coatigcc))
 $(info toolchain = gcc)
-DEPS += libmspware
+DEPS += libmspware \
+        libfxl \
+
 
 else
 $(info lib_root = $(LIB_ROOT))
-CFLAGS += -I$(LIB_ROOT)/libmspware/src/include
-LFLAGS += -L$(LIB_ROOT)/libmspware/bld/gcc
-LIBS += -lmspware
+CFLAGS += -I$(LIB_ROOT)/libmspware/src/include \
+          -I$(LIB_ROOT)/libfxl/src/include
+
+LFLAGS += -L$(LIB_ROOT)/libmspware/bld/gcc \
+          -L$(LIB_ROOT)/libfxl/bld/gcc \
+
+LIBS += -lmspware \
+        -lfxl \
+
 endif # TOOLCHAIN
 
 
@@ -27,9 +35,9 @@ endif # LIBCAPYBARA_SWITCH_DESIGN
 
 DEPS += \
   libmsp \
-  libmspware\
   libio\
-  libfxl\
+#  libmspware\
+#  libfxl\
 
 
 ifneq ($(LIBCAPYBARA_VARTH_ENABLED),)
