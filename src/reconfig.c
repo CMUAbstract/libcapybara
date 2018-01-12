@@ -14,6 +14,7 @@
 #include <libmsp/periph.h>
 #include <libmsp/mem.h>
 #include <libmsp/gpio.h>
+#include <libio/console.h>
 #include "reconfig.h"
 #include "power.h"
 
@@ -253,13 +254,20 @@ void capybara_transition(int index)
     switch(curpwrcfg){
         case BURST:
             prechg_status = 0;
-            capybara_config_banks(prechg_config.banks);
+            //capybara_config_banks(prechg_config.banks);
+            capybara_config_banks(cur->precfg->banks);
+            LOG2("burst! going to %x, banks = %x\r\n", 
+                cur->precfg->banks, base_config.banks);
+            // Change to curpwrcfg->precfg ? or opcfg?
+            base_config.banks = cur->precfg->banks;
             burst_status = 1;
             break;
 
         case PREBURST:
             if(!prechg_status){
+                LOG2("Precharging! \r\n");
                 prechg_config.banks = cur->precfg->banks;
+                base_config.banks = cur->precfg->banks;
                 capybara_config_banks(prechg_config.banks);
                 // Mark that we finished the config_banks_command
                 prechg_status = 1;
@@ -271,6 +279,8 @@ void capybara_transition(int index)
         case CONFIGD:
 
             if(base_config.banks != cur->opcfg->banks){
+                LOG2("New config! going to %x from %x\r\n",
+                    cur->opcfg->banks, base_config.banks);
                 base_config.banks = cur->opcfg->banks;
                 // Check if we want to burn the rest of our energy before recharging
                 capybara_config_banks(base_config.banks);
