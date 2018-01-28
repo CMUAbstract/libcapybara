@@ -89,5 +89,6 @@ capybara_wait_for_supply();
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
 #endif // BOARD_{MAJOR,MINOR}
+    __enable_interrupt();
 }
 
