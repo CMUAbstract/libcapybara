@@ -1,5 +1,10 @@
 #include <msp430.h>
 
+#if 0
+#define LCBPRINTF printf
+#else
+#define LCBPRINTF(...)
+#endif
 
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 #include <libmcppot/mcp4xxx.h>
@@ -22,7 +27,7 @@
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 __nv capybara_cfg_t base_config = {0} ; 
 #else
-__nv capybara_cfg_t base_config = {.banks = 0x1}; 
+__nv capybara_cfg_t base_config = {.banks = 0xFF}; 
 #endif 
 
 __nv capybara_cfg_t prechg_config = {0}; 
@@ -81,7 +86,7 @@ int issue_precharge(capybara_bankmask_t cfg){
 #define X(a, b, c) {.banks = b},
 #endif
 
-capybara_cfg_t pwr_levels[] = {
+__nv capybara_cfg_t pwr_levels[] = {
     PWR_LEVEL_TABLE
     #undef X
 };
@@ -251,12 +256,15 @@ void capybara_transition(int index)
     }
     capybara_task_cfg_t *cur = pwr_configs + index ; 
     capybara_cfg_spec_t curpwrcfg = cur->type;
+    LCBPRINTF("addr = %x, top = %u type=%x, cur cfg = %x\r\n",
+            (pwr_configs + index),(pwr_configs),
+            (pwr_configs + index)->type, base_config.banks);
     switch(curpwrcfg){
         case BURST:
             prechg_status = 0;
             //capybara_config_banks(prechg_config.banks);
             capybara_config_banks(cur->precfg->banks);
-            LOG2("burst! going to %x, banks = %x\r\n", 
+            LCBPRINTF("burst! going to %x, banks = %x\r\n", 
                 cur->precfg->banks, base_config.banks);
             // Change to curpwrcfg->precfg ? or opcfg?
             base_config.banks = cur->precfg->banks;
@@ -265,7 +273,7 @@ void capybara_transition(int index)
 
         case PREBURST:
             if(!prechg_status){
-                LOG2("Precharging! \r\n");
+                LCBPRINTF("Precharging! \r\n");
                 prechg_config.banks = cur->precfg->banks;
                 base_config.banks = cur->precfg->banks;
                 capybara_config_banks(prechg_config.banks);
@@ -279,7 +287,7 @@ void capybara_transition(int index)
         case CONFIGD:
 
             if(base_config.banks != cur->opcfg->banks){
-                LOG2("New config! going to %x from %x\r\n",
+                LCBPRINTF("New config! going to %x from %x\r\n",
                     cur->opcfg->banks, base_config.banks);
                 base_config.banks = cur->opcfg->banks;
                 // Check if we want to burn the rest of our energy before recharging
@@ -292,7 +300,7 @@ void capybara_transition(int index)
             break;
     }
 #endif
-   //LOG("Running task %u \r\n",curctx->task->idx);
+   LCBPRINTF("Running task %u \r\n",curctx->task->idx);
 
 }
 
