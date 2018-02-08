@@ -49,9 +49,9 @@ void capybara_wait_for_banks()
 }
 
 int capybara_report_vbank_ok()
-{   int vbank_ok_val = 0;  
-    vbank_ok_val = GPIO(LIBCAPYBARA_PORT_VBANK_OK,IN) & BIT(LIBCAPYBARA_PIN_VBANK_OK); 
-    return vbank_ok_val; 
+{   int vbank_ok_val = 0;
+    vbank_ok_val = GPIO(LIBCAPYBARA_PORT_VBANK_OK,IN) & BIT(LIBCAPYBARA_PIN_VBANK_OK);
+    return vbank_ok_val;
 }
 
 void capybara_wait_for_vcap()

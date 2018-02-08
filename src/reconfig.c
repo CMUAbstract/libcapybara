@@ -23,63 +23,51 @@
 #include "reconfig.h"
 #include "power.h"
 
-/* Working config and precharged config */ 
+/* Working config and precharged config */
 #ifdef LIBCAPYBARA_VARTH_ENABLED
-__nv capybara_cfg_t base_config = {0} ; 
+__nv capybara_cfg_t base_config = {0} ;
 #else
-__nv capybara_cfg_t base_config = {.banks = 0xFF}; 
-#endif 
+__nv capybara_cfg_t base_config = {.banks = 0xFF};
+#endif
 
-__nv capybara_cfg_t prechg_config = {0}; 
+/* Precharge and Burst status globals */
+__nv prechg_status_t prechg_status = 0;
+__nv burst_status_t burst_status = 0;
+__nv swap_status_t swap_status = 0;
 
-/* Precharge and Burst status globals */ 
-__nv prechg_status_t prechg_status = 0;  
-__nv burst_status_t burst_status = 0; 
+
 volatile prechg_status_t v_prechg_status;
-volatile burst_status_t v_burst_status; 
+volatile burst_status_t v_burst_status;
 
 /* Leaving these simple for now... I can't see them ever getting too complicated, but who
  * knows? TODO turn these into macros so we don't have to pay for a function call every
- * single time they're accessed... 
+ * single time they're accessed...
  */
 
 prechg_status_t get_prechg_status(void){
-    return (prechg_status); 
+    return (prechg_status);
 }
 
 int set_prechg_status(prechg_status_t in){
-    prechg_status = in; 
-    return 0; 
+    prechg_status = in;
+    return 0;
 }
 
 burst_status_t get_burst_status(void){
-    return (burst_status); 
+    return (burst_status);
 }
 
 int set_burst_status(burst_status_t in){
-    burst_status = in; 
-    return 0; 
+    burst_status = in;
+    return 0;
 }
 
 int set_base_banks(capybara_bankmask_t in){
     base_config.banks = in;
-    return 0; 
+    return 0;
 }
 
-int set_prechg_banks(capybara_bankmask_t in){
-    prechg_config.banks = in;
-    return 0; 
-}
 
-//  Command from userspace code to issue a precharge, takes bank config as
-//  an argument (TODO: figure out if this is the best place for this function to
-//  live... I suspect it doesn't belong back here given how closely its usage is
-//  tied to libchain)
-int issue_precharge(capybara_bankmask_t cfg){
-    prechg_config.banks = cfg; 
-    prechg_status = 1; 
-    return 0; 
-}
 #ifdef LIBCAPYBARA_VARTH_ENABLED
 #define X(a, b, c) {.banks = b, .vth = c},
 #else
@@ -254,7 +242,7 @@ void capybara_transition(int index)
     if(burst_status){
         burst_status = 2;
     }
-    capybara_task_cfg_t *cur = pwr_configs + index ; 
+    capybara_task_cfg_t *cur = pwr_configs + index ;
     capybara_cfg_spec_t curpwrcfg = cur->type;
     LCBPRINTF("addr = %x, top = %u type=%x, cur cfg = %x\r\n",
             (pwr_configs + index),(pwr_configs),
@@ -262,22 +250,24 @@ void capybara_transition(int index)
     switch(curpwrcfg){
         case BURST:
             prechg_status = 0;
-            //capybara_config_banks(prechg_config.banks);
+            swap_status = 0;
             capybara_config_banks(cur->precfg->banks);
-            LCBPRINTF("burst! going to %x, banks = %x\r\n", 
+            LCBPRINTF("burst! going to %x, banks = %x\r\n",
                 cur->precfg->banks, base_config.banks);
             // Change to curpwrcfg->precfg ? or opcfg?
             base_config.banks = cur->precfg->banks;
+            swap_status = 1;
             burst_status = 1;
             break;
 
         case PREBURST:
             if(!prechg_status){
                 LCBPRINTF("Precharging! \r\n");
-                prechg_config.banks = cur->precfg->banks;
+                swap_status = 0;
                 base_config.banks = cur->precfg->banks;
-                capybara_config_banks(prechg_config.banks);
+                capybara_config_banks(base_config.banks);
                 // Mark that we finished the config_banks_command
+                swap_status = 1;
                 prechg_status = 1;
                 capybara_shutdown();
                 capybara_wait_for_supply();
@@ -286,12 +276,13 @@ void capybara_transition(int index)
 
         case CONFIGD:
 
-            if(base_config.banks != cur->opcfg->banks){
+            if((base_config.banks != cur->opcfg->banks) || (swap_status == 0)){
                 LCBPRINTF("New config! going to %x from %x\r\n",
                     cur->opcfg->banks, base_config.banks);
+                swap_status = 0;
                 base_config.banks = cur->opcfg->banks;
-                // Check if we want to burn the rest of our energy before recharging
                 capybara_config_banks(base_config.banks);
+                swap_status = 1;
                 capybara_wait_for_supply();
             }
             //Another intentional fall through

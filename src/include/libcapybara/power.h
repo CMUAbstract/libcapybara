@@ -14,9 +14,9 @@ void capybara_wait_for_supply();
 void capybara_wait_for_vcap();
 
 // Wait for Vbank_ok signal to go high again
-void capybara_wait_for_banks(); 
+void capybara_wait_for_banks();
 
-// Query Vbank_ok pin 
+// Query Vbank_ok pin
 int capybara_report_vbank_ok();
 
 // Function-macro for handling VBOOST_OK interrupt. Cannot be contained within
