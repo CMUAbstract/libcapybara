@@ -71,7 +71,7 @@ X(LOWP,    0x0, 2.5) \
 X(LOWP2,   0x2, 2.5) \
 X(MEDLOWP, 0x1, 2.5) \
 X(MEDP ,   0x4, 2.5) \
-X(MEDP2,   0x3, 2.5) \
+X(MEDP2,   0x5, 2.5) \
 X(MEDHIGHP,0x7, 2.5) \
 X(HIGHP,   0xF, 2.5) \
 X(BACKP,   0xC, 2.5) \
