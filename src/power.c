@@ -24,7 +24,6 @@ void capybara_wait_for_supply()
         __disable_interrupt();
     }
     __enable_interrupt();
-
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IE) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
     GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IFG) &= ~BIT(LIBCAPYBARA_PIN_VBOOST_OK);
 }
@@ -64,6 +63,9 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
+    P3OUT |= BIT5;
+    P3DIR |= BIT5;
+    P3OUT &= ~BIT5;
     // Disable booster
     GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
 
@@ -122,7 +124,8 @@ void COMP_VBANK_ISR (void)
             break;
     }
 }
-#ifndef __GNUC__
+#ifdef CLANGISR
+#pragma warning "Adding in vector!"
 __attribute__((section("__interrupt_vector_comp_e"),aligned(2)))
 void(*__vector_compe_e)(void) = COMP_VBANK_ISR;
 #endif //GCC

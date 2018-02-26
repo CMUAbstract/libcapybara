@@ -2,7 +2,6 @@ LIB = libcapybara
 
 include ../Makefile.config
 include ../Makefile.options
-include ../Makefile.target
 
 OBJECTS += \
   capy_board_init.o \
@@ -13,6 +12,9 @@ ifeq ($(TOOLCHAIN),$(filter $(TOOLCHAIN), gcc coatigcc))
 $(info toolchain = gcc)
 DEPS += libmspware \
         libfxl \
+        libmsp \
+
+CFLAGS += -I$(LIB_ROOT)/libmsp/src/include
 
 
 else
@@ -51,3 +53,4 @@ override CFLAGS += \
   -I$(SRC_ROOT)/ \
   -I$(SRC_ROOT)/include \
 	-I$(SRC_ROOT)/include/$(LIB) \
+

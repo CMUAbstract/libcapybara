@@ -1,15 +1,15 @@
 # Can't unconditionally use maker's DEPS facility for this lib, because the lib
 # must be built with gcc even when linked into a Clang-built binary.
 ifeq ($(TOOLCHAIN),$(filter $(TOOLCHAIN), gcc coatigcc))
-DEPS += libmsp libmspware
-CFLAGS += -I$(LIB_ROOT)/libmsp/src/include
+DEPS += libcapybara
+CFLAGS += -I$(LIB_ROOT)/libcapybara/src/include
 else # TOOLCHAIN != gcc
 
 # libmspware is special because it has to be compiled by GCC, not Clang,
 # even if the app is built with Clang
-CFLAGS += -I$(LIB_ROOT)/libmspware/src/include
-LFLAGS += -L$(LIB_ROOT)/libmspware/bld/gcc
-LIBS += -lmspware
+CFLAGS += -I$(LIB_ROOT)/libcapybara/src/include
+LFLAGS += -L$(LIB_ROOT)/libcapybara/bld/gcc
+LIBS += -lcapybara
 
 endif # TOOLCHAIN != gcc
 
