@@ -12,7 +12,8 @@
 #include <libmsp/uart.h>
 //#include <libmspuartlink/uartlink.h>
 
-#if BOARD_MAJOR == 1 && BOARD_MINOR == 1
+#if (BOARD_MAJOR == 1 && BOARD_MINOR == 1) || BOARD_MAJOR == 2
+#warning Adding libfxl
 #include <libfxl/fxl6408.h>
 #endif// BOARD_{MAJOR,MINOR}
 
@@ -36,8 +37,8 @@ void capy_board_init(void) {
 #ifndef LIBCAPYBARA_CONT_POWER
 #pragma message ("continuous power not defined!")
 capybara_wait_for_supply();
-#if BOARD_MAJOR == 1 && BOARD_MINOR == 1
-    capybara_wait_for_vcap();
+#if (BOARD_MAJOR == 1 && BOARD_MINOR == 1) || BOARD_MAJOR == 2
+   capybara_wait_for_vcap();
 #endif // BOARD_{MAJOR,MINOR}
 #endif // LIBCAPYBARA_CONT_POWER
     capybara_config_pins();
@@ -46,10 +47,9 @@ capybara_wait_for_supply();
 #ifndef LIBCAPYBARA_CONT_POWER
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 0
     capybara_shutdown_on_deep_discharge();
-#elif BOARD_MAJOR == 1 && BOARD_MINOR == 1
-		capybara_wait_for_supply();
+#elif (BOARD_MAJOR == 1 && BOARD_MINOR == 1) || BOARD_MAJOR == 2
     if (capybara_shutdown_on_deep_discharge() == CB_ERROR_ALREADY_DEEPLY_DISCHARGED) {
-        capybara_shutdown();
+      capybara_shutdown();
     }
 #endif //BOARD.{MAJOR,MINOR}
 #endif //LIBCAPYBARA_CONT_POWER
@@ -68,7 +68,7 @@ capybara_wait_for_supply();
     P3DIR |= BIT0;
     GPIO(PORT_DEBUG, OUT) &= ~BIT(PIN_DEBUG);
     GPIO(PORT_DEBUG, DIR) |= BIT(PIN_DEBUG);
-#elif BOARD_MAJOR == 1 && BOARD_MINOR == 1
+#elif (BOARD_MAJOR == 1 && BOARD_MINOR == 1)
 
     INIT_CONSOLE();
     __enable_interrupt();
@@ -77,15 +77,25 @@ capybara_wait_for_supply();
     EUSCI_B_I2C_setup();
     LOG2("fxl init\r\n");
     fxl_init();
-    LOG2("RADIO_SW\r\n");
-
     fxl_out(BIT_PHOTO_SW);
     fxl_out(BIT_RADIO_SW);
     fxl_out(BIT_RADIO_RST);
     fxl_out(BIT_APDS_SW);
     fxl_pull_up(BIT_CCS_WAKE);
     LOG2("Done fxl!\r\n");
-		// SENSE_SW is present but is not electrically correct: do not use.
+		
+    // SENSE_SW is present but is not electrically correct: do not use.
+#elif BOARD_MAJOR == 2
+    INIT_CONSOLE();
+    __enable_interrupt();
+    msp_gpio_unlock();
+    LOG2("Setting up i2c\r\n");
+    EUSCI_B_I2C_setup();
+    LOG2("fxl init\r\n");
+    fxl_init();
+    LOG2("SENSE_SW\r\n");
+    fxl_out(BIT_SENSE_SW);
+
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
 #endif // BOARD_{MAJOR,MINOR}

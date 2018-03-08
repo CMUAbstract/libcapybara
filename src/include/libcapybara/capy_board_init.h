@@ -23,6 +23,10 @@ void capy_board_init();
 #define BIT_RADIO_RST (1 << 6)
 #define BIT_RADIO_SW  (1 << 7)
 
+#elif BOARD_MAJOR == 2
+
+#define BIT_SENSE_SW (1 << 7)
+
 #endif // BOARD.{MAJOR,MINOR}
 
 #endif//CAPY_BOARD_INIT_H
