@@ -63,6 +63,8 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
+
+
     // Disable booster
     GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
 

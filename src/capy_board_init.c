@@ -83,10 +83,11 @@ capybara_wait_for_supply();
     fxl_out(BIT_APDS_SW);
     fxl_pull_up(BIT_CCS_WAKE);
     LOG2("Done fxl!\r\n");
-		
+
     // SENSE_SW is present but is not electrically correct: do not use.
 #elif BOARD_MAJOR == 2
-    INIT_CONSOLE();
+  #warning BOARD_MAJOR is 2
+  INIT_CONSOLE();
     __enable_interrupt();
     msp_gpio_unlock();
     LOG2("Setting up i2c\r\n");

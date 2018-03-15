@@ -8,6 +8,12 @@ OBJECTS += \
 	capybara.o \
 	power.o \
 
+ifeq ($(BOARD_MAJOR),2)
+$(info major = 2)
+else
+$(info board major defined as ${BOARD_MAJOR})
+endif
+
 ifeq ($(TOOLCHAIN),$(filter $(TOOLCHAIN), gcc coatigcc))
 $(info toolchain = gcc)
 DEPS += libmspware \

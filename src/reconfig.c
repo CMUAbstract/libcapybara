@@ -123,6 +123,7 @@ __nv capybara_cfg_t pwr_levels[] = {
         GPIO(BANK_PORT(i, OPEN), OUT) |= BIT(BANK_PIN(i, OPEN))
 
 #elif defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
+#pragma message "running nc"
 
 #define BANK_CONNECT(i) \
         GPIO(BANK_PORT(i), OUT) &= ~BIT(BANK_PIN(i))
@@ -135,7 +136,7 @@ __nv capybara_cfg_t pwr_levels[] = {
 #endif // LIBCAPYBARA_SWITCH_CONTROL
 
 #elif defined(LIBCAPYBARA_SWITCH_DESIGN__NO)
-
+#pragma message "running no"
 #if defined(LIBCAPYBARA_SWITCH_CONTROL__TWO_PIN)
 #error Not implemented: switch design NO, switch control TWO PIN
 #elif defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
@@ -162,7 +163,6 @@ int capybara_config_banks(capybara_bankmask_t banks)
 
     // NOTE: This is not a loop, because the pins and ports are
     // resolved at compile time. We don't want a runtime map.
-
 #define CONFIG_BANK(i) \
     if (banks & (1 << i)) { BANK_CONNECT(i); } else { BANK_DISCONNECT(i); }
 #define DO_CONNECT_LATCH(i) \
