@@ -2,6 +2,7 @@
 
 #include <libmsp/periph.h>
 #include <libmsp/sleep.h>
+#include <libjit/jit.h>
 
 #include "power.h"
 #include "reconfig.h" 
@@ -64,6 +65,8 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
+		//KWMAENG: TEST
+		//P1OUT &= ~BIT3;
     // Disable booster
     GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
 
@@ -127,28 +130,73 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
 // Own the ISR for now, if need be can make a function, to let main own the ISR
 ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 {
-    switch (__even_in_range(COMP_VBANK(IV), 0x4)) {
-        case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IIFG):
-            break;
-        case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
-            COMP_VBANK(INT) &= ~COMP_VBANK(IE);
-            COMP_VBANK(CTL1) &= ~COMP_VBANK(ON);
-        // If manually issuing precharge commands
-        #ifdef LIBCAPYBARA_EXPLICIT_PRECHG
-            // Check if a burst completed 
-            if(burst_status == 2){
-                // Revert to base configuration
-                capybara_config_banks(base_config.banks);
-            }
-            // Check if a burst started, and did not complete
-            //This may not be strictly necessary, but for now, leave it please
-            // :) 
-            else if(burst_status == 1){
-                capybara_config_banks(prechg_config.banks); 
-            }
-            //Otherwise we stay in whatever config we had before
-        #endif
-            capybara_shutdown();
-            break;
-    }
+	switch (__even_in_range(COMP_VBANK(IV), 0x4)) {
+		case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IIFG):
+			break;
+		case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
+			COMP_VBANK(INT) &= ~COMP_VBANK(IE);
+			COMP_VBANK(CTL1) &= ~COMP_VBANK(ON);
+			// If manually issuing precharge commands
+#ifdef LIBCAPYBARA_EXPLICIT_PRECHG
+			// Check if a burst completed 
+			if(burst_status == 2){
+				// Revert to base configuration
+				capybara_config_banks(base_config.banks);
+			}
+			// Check if a burst started, and did not complete
+			//This may not be strictly necessary, but for now, leave it please
+			// :) 
+			else if(burst_status == 1){
+				capybara_config_banks(prechg_config.banks); 
+			}
+			//Otherwise we stay in whatever config we had before
+#endif
+			// KWMAENG: CHECKPOINT
+			// |	lr(MSB) | <- 50(r1)
+			// |		r2	  | <- 48(r1)
+			// |	r15(MSB)|
+			// |	r15(LSB)|
+			// |	r14(MSB)|
+			// |	r14(LSB)|
+			// |	r13(MSB)|
+			// |	r13(LSB)|
+			// |	r12(MSB)|
+			// |	r12(LSB)|
+			// |	r11(MSB)|
+			// |	r11(LSB)|
+			// |	r10(MSB)|
+			// |	r10(LSB)|
+			// |	r9 (MSB)|
+			// |	r9 (LSB)|
+			// |	r8 (MSB)|
+			// |	r8 (LSB)|
+			// |	r7 (MSB)|
+			// |	r7 (LSB)|
+			// |	r6 (MSB)|
+			// |	r6 (LSB)|
+			// |	r5 (MSB)|
+			// |	r5 (LSB)|
+			// |	r4 (MSB)|
+			// |	r4 (LSB)| <- r1
+			// Save to 0x4400 ~0x443e
+			if (!chkpt_mask) {
+				__asm__ volatile ("MOV 50(R1), &0x4400");//r0
+				__asm__ volatile ("MOVX.A R1, &0x4404"); //r1 (- 52)
+				__asm__ volatile ("MOV 48(R1), &0x4408");//r2
+				__asm__ volatile ("MOVX.A 0(R1), &0x4410");//r4
+				__asm__ volatile ("MOVX.A 4(R1), &0x4414");//r5
+				__asm__ volatile ("MOVX.A 8(R1), &0x4418");
+				__asm__ volatile ("MOVX.A 12(R1), &0x441c");
+				__asm__ volatile ("MOVX.A 16(R1), &0x4420");
+				__asm__ volatile ("MOVX.A 20(R1), &0x4424");
+				__asm__ volatile ("MOVX.A 24(R1), &0x4428");
+				__asm__ volatile ("MOVX.A 28(R1), &0x442c");
+				__asm__ volatile ("MOVX.A 32(R1), &0x4430");
+				__asm__ volatile ("MOVX.A 36(R1), &0x4434");
+				__asm__ volatile ("MOVX.A 40(R1), &0x4438");
+				__asm__ volatile ("MOVX.A 44(R1), &0x443c");
+			}
+			capybara_shutdown();
+			break;
+	}
 }
