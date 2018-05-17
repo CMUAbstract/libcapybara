@@ -7,10 +7,6 @@
 #include "power.h"
 #include "reconfig.h" 
 
-// Shorthand
-#define COMP_VBANK(...)  COMP(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
-#define COMP2_VBANK(...) COMP2(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
-
 void capybara_wait_for_supply()
 {
     // wait for BOOST_OK: supply voltage stablized
@@ -181,7 +177,6 @@ ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 			// Save to 0x4400 ~0x443e
 			if (!chkpt_mask) {
 				__asm__ volatile ("MOV 50(R1), &0x4400");//r0
-				__asm__ volatile ("MOVX.A R1, &0x4404"); //r1 (- 52)
 				__asm__ volatile ("MOV 48(R1), &0x4408");//r2
 				__asm__ volatile ("MOVX.A 0(R1), &0x4410");//r4
 				__asm__ volatile ("MOVX.A 4(R1), &0x4414");//r5
@@ -195,6 +190,9 @@ ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 				__asm__ volatile ("MOVX.A 36(R1), &0x4434");
 				__asm__ volatile ("MOVX.A 40(R1), &0x4438");
 				__asm__ volatile ("MOVX.A 44(R1), &0x443c");
+				__asm__ volatile ("ADD #52, R1");
+				__asm__ volatile ("MOVX.A R1, &0x4404"); //r1 (- 52)
+				__asm__ volatile ("SUB #52, R1");
 			}
 			capybara_shutdown();
 			break;

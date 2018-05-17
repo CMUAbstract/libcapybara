@@ -1,6 +1,9 @@
 #ifndef LIBCAPYBARA_POWER_H
 #define LIBCAPYBARA_POWER_H
 
+// Shorthand
+#define COMP_VBANK(...)  COMP(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
+#define COMP2_VBANK(...) COMP2(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
 // Some error codes
 typedef enum {
     CB_SUCCESS = 0,
