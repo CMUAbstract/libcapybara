@@ -22,6 +22,10 @@ void capybara_wait_for_banks();
 // Query Vbank_ok pin 
 int capybara_report_vbank_ok();
 
+// KIWAN: Temp for debugging
+extern volatile unsigned chkptStart;
+extern volatile unsigned chkptEnd;
+
 // Function-macro for handling VBOOST_OK interrupt. Cannot be contained within
 // the library since library cannot own the ISR which may need to also handle
 // unrelated pins.  Defined as a macro because can only use __bi[cs]_SR

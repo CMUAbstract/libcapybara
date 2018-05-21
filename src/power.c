@@ -2,10 +2,15 @@
 
 #include <libmsp/periph.h>
 #include <libmsp/sleep.h>
+#ifdef JIT
 #include <libjit/jit.h>
+#endif
 
 #include "power.h"
 #include "reconfig.h" 
+
+__nv volatile unsigned chkptStart = 0;
+__nv volatile unsigned chkptEnd = 0;
 
 void capybara_wait_for_supply()
 {
@@ -61,8 +66,6 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
-		//KWMAENG: TEST
-		//P1OUT &= ~BIT3;
     // Disable booster
     GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
 
@@ -175,7 +178,8 @@ ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 			// |	r4 (MSB)|
 			// |	r4 (LSB)| <- r1
 			// Save to 0x4400 ~0x443e
-			if (!chkpt_mask) {
+#ifdef JIT
+			if (!(chkpt_mask || chkpt_mask_init)) {
 				__asm__ volatile ("MOV 50(R1), &0x4400");//r0
 				__asm__ volatile ("MOV 48(R1), &0x4408");//r2
 				__asm__ volatile ("MOVX.A 0(R1), &0x4410");//r4
@@ -194,6 +198,9 @@ ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 				__asm__ volatile ("MOVX.A R1, &0x4404"); //r1 (- 52)
 				__asm__ volatile ("SUB #52, R1");
 			}
+			P1OUT |= BIT3;
+			P1OUT &= ~BIT3;
+#endif
 			capybara_shutdown();
 			break;
 	}
