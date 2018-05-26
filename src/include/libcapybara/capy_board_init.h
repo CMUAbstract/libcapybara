@@ -1,7 +1,6 @@
 #ifndef CAPY_BOARD_INIT_H
 #define CAPY_BOARD_INIT_H
 
-void i2c_setup();
 void capy_board_init();
 
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 0
