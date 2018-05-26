@@ -123,7 +123,6 @@ __nv capybara_cfg_t pwr_levels[] = {
         GPIO(BANK_PORT(i, OPEN), OUT) |= BIT(BANK_PIN(i, OPEN))
 
 #elif defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
-#pragma message "running nc"
 
 #define BANK_CONNECT(i) \
         GPIO(BANK_PORT(i), OUT) &= ~BIT(BANK_PIN(i))
@@ -136,7 +135,6 @@ __nv capybara_cfg_t pwr_levels[] = {
 #endif // LIBCAPYBARA_SWITCH_CONTROL
 
 #elif defined(LIBCAPYBARA_SWITCH_DESIGN__NO)
-#pragma message "running no"
 #if defined(LIBCAPYBARA_SWITCH_CONTROL__TWO_PIN)
 #error Not implemented: switch design NO, switch control TWO PIN
 #elif defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
