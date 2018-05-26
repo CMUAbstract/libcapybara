@@ -94,7 +94,6 @@ void capy_board_init(void) {
 
 // Don't wait if we're on continuous power
 #ifndef LIBCAPYBARA_CONT_POWER
-#pragma message ("continuous power not defined!")
     capybara_wait_for_supply();
 #if (BOARD_MAJOR == 1 && BOARD_MINOR == 1) || BOARD_MAJOR == 2
     capybara_wait_for_vcap();
