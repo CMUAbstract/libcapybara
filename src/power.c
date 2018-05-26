@@ -20,7 +20,7 @@ void capybara_wait_for_supply()
     __disable_interrupt(); // classic lock-check-sleep pattern
     while ((GPIO(LIBCAPYBARA_PORT_VBOOST_OK, IN) & BIT(LIBCAPYBARA_PIN_VBOOST_OK)) !=
                 BIT(LIBCAPYBARA_PIN_VBOOST_OK)) {
-				__bis_SR_register(LPM4_bits + GIE);
+        __bis_SR_register(LPM4_bits + GIE);
         __disable_interrupt();
     }
     __enable_interrupt();
@@ -63,8 +63,6 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
-
-
     // Disable booster
     GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
 

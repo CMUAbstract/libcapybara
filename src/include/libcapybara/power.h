@@ -46,6 +46,4 @@ void capybara_shutdown();
 // Returns ERROR_ALREADY_DEEPLY_DISCHARGED if already below threshold when called.
 cb_rc_t capybara_shutdown_on_deep_discharge();
 
-void COMP_VBANK_ISR(void);
-
 #endif // LIBCAPYBARA_POWER_H
