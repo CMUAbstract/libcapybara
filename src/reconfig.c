@@ -1,7 +1,7 @@
 #include <msp430.h>
 
 #if 0
-#define LCBPRINTF printf
+#define LCBPRINTF LOG2
 #else
 #define LCBPRINTF(...)
 #endif
