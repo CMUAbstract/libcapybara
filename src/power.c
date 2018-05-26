@@ -78,7 +78,10 @@ void capybara_shutdown()
 cb_rc_t capybara_shutdown_on_deep_discharge()
 {
 
-#if defined(__MSP430FR5949__)
+// SEL pin multiplexing config is per device, not per family, so do per-device
+// here, even though it's probably consistent across the family.
+#if defined(__MSP430FR5949__) || \
+    defined(__MSP430FR5994__) //
     GPIO(LIBCAPYBARA_VBANK_COMP_PIN_PORT, SEL0) |= BIT(LIBCAPYBARA_VBANK_COMP_PIN_PIN);
     GPIO(LIBCAPYBARA_VBANK_COMP_PIN_PORT, SEL1) |= BIT(LIBCAPYBARA_VBANK_COMP_PIN_PIN);
 #else // device
