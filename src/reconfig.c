@@ -12,9 +12,9 @@
 
 #include <libmspware/driverlib.h>
 
-#if defined(__clang__) && CLANG_VERSION_MAJOR < 5
+#if defined(__clang__)
 #include <libmspbuiltins/builtins.h>
-#endif // clang < 5
+#endif // __clang__
 
 #include <libmsp/periph.h>
 #include <libmsp/mem.h>
