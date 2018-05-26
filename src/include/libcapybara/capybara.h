@@ -4,6 +4,6 @@
 #include <libcapybara/reconfig.h>
 #include <libcapybara/power.h>
 
-void capybara_config_pins();
+void capybara_init();
 
 #endif // LIBCAPYBARA_CAPYBARA_H

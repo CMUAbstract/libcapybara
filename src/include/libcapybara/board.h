@@ -1,7 +1,7 @@
-#ifndef CAPY_BOARD_INIT_H
-#define CAPY_BOARD_INIT_H
+#ifndef LIBCAPYBARA_BOARD_H
+#define LIBCAPYBARA_BOARD_H
 
-void capy_board_init();
+void capybara_board_init();
 
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 0
 #define PORT_SENSE_SW 3
@@ -28,4 +28,4 @@ void capy_board_init();
 
 #endif // BOARD.{MAJOR,MINOR}
 
-#endif//CAPY_BOARD_INIT_H
+#endif // LIBCAPYBARA_BOARD_H

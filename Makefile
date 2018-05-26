@@ -1,9 +1,9 @@
 LIB = libcapybara
 
 OBJECTS += \
-	capy_board_init.o \
 	capybara.o \
 	power.o \
+	board.o \
 
 ifneq ($(LIBCAPYBARA_SWITCH_DESIGN),)
 OBJECTS += reconfig.o
