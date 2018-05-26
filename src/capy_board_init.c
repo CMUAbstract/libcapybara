@@ -43,13 +43,9 @@ void capy_board_init(void) {
 
 // Set up deep_discharge stop
 #ifndef LIBCAPYBARA_CONT_POWER
-#if BOARD_MAJOR == 1 && BOARD_MINOR == 0
-    capybara_shutdown_on_deep_discharge();
-#elif (BOARD_MAJOR == 1 && BOARD_MINOR == 1) || BOARD_MAJOR == 2
     if (capybara_shutdown_on_deep_discharge() == CB_ERROR_ALREADY_DEEPLY_DISCHARGED) {
       capybara_shutdown();
     }
-#endif //BOARD.{MAJOR,MINOR}
 #endif //LIBCAPYBARA_CONT_POWER
 
     // TODO: the following does not belong in libcapybara, it is not related to
