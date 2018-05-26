@@ -1,5 +1,4 @@
 #include <msp430.h>
-#include <stdio.h>
 #include <libmspware/driverlib.h>
 #include <libmspware/i2c_setup.h>
 
