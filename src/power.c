@@ -79,7 +79,7 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
 // SEL pin multiplexing config is per device, not per family, so do per-device
 // here, even though it's probably consistent across the family.
 #if defined(__MSP430FR5949__) || \
-    defined(__MSP430FR5994__) //
+    defined(__MSP430FR5994__)
     GPIO(LIBCAPYBARA_VBANK_COMP_PIN_PORT, SEL0) |= BIT(LIBCAPYBARA_VBANK_COMP_PIN_PIN);
     GPIO(LIBCAPYBARA_VBANK_COMP_PIN_PORT, SEL1) |= BIT(LIBCAPYBARA_VBANK_COMP_PIN_PIN);
 #else // device
@@ -111,8 +111,7 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
 }
 
 // Own the ISR for now, if need be can make a function, to let main own the ISR
-__attribute__ ((interrupt(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))))
-void COMP_VBANK_ISR (void)
+ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 {
     switch (__even_in_range(COMP_VBANK(IV), 0x4)) {
         case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IIFG):
@@ -124,9 +123,3 @@ void COMP_VBANK_ISR (void)
             break;
     }
 }
-#ifdef CLANGISR
-#pragma warning "Adding in vector!"
-__attribute__((section("__interrupt_vector_comp_e"),aligned(2)))
-void(*__vector_compe_e)(void) = COMP_VBANK_ISR;
-#endif //GCC
-

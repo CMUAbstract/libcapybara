@@ -80,7 +80,7 @@ __nv capybara_cfg_t pwr_levels[] = {
 };
 
 // Cycles for the latch cap to charge/discharge
-#define SWITCH_TIME_CYCLES 0x1fff // charges to ~2.4v (almost full-scale); discharges to <100mV
+#define SWITCH_TIME_CYCLES 6400 // charges to ~2.2v
 
 #if defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
 
@@ -90,12 +90,6 @@ __nv capybara_cfg_t pwr_levels[] = {
 #define BANK_PIN_INNER(i) LIBCAPYBARA_BANK_PORT_ ## i ## _PIN
 #define BANK_PIN(i) BANK_PIN_INNER(i)
 
-#define CONNECT_LATCH(i, op) \
-        GPIO(BANK_PORT(i), DIR) |= BIT(BANK_PIN(i))
-
-#define DISCONNECT_LATCH(i, op) \
-        GPIO(BANK_PORT(i), DIR) &= ~BIT(BANK_PIN(i))
-
 #elif defined(LIBCAPYBARA_SWITCH_CONTROL__TWO_PIN)
 
 #define BANK_PORT_INNER(i, op) LIBCAPYBARA_BANK_PORT_ ## i ## _ ## op ## _PORT
@@ -104,6 +98,68 @@ __nv capybara_cfg_t pwr_levels[] = {
 #define BANK_PIN_INNER(i, op) LIBCAPYBARA_BANK_PORT_ ## i ## _ ## op ## _PIN
 #define BANK_PIN(i, op) BANK_PIN_INNER(i, op)
 
+#endif // LIBCAPYBARA_SWITCH_CONTROL
+
+#if LIBCAPYBARA_NUM_BANKS != 4 // safety-check, if you change this change the following code!
+#error Fixed number of banks in implementation differs from the configuration.
+#endif // LIBCAPYBARA_NUM_BANKS
+
+// If bank switch lines on the same port and the switch interface is one-pin,
+// we can config all banks at once.
+//
+// NOTE: We support the all-at-once config only if pins are consecutive. We
+// could support simultaneous config for non-consecutive pins too, by remapping
+// bit positions in the API getters/setters (which is better than remapping
+// them on every config; also, we don't want to expose hw pin to the API
+// consumer, for the consumer, bit 0 in the bitmask always refers to bank0).
+// But, for now we just fall back to non-simulatenous impl in the
+// non-consecutive case.
+#if defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN) && \
+    (BANK_PORT(0) == BANK_PORT(1) == BANK_PORT(2) == BANK_PORT(3)) && \
+    (BANK_PIN(1) - BANK_PIN(0) == 1) && \
+    (BANK_PIN(2) - BANK_PIN(1) == 1) && \
+    (BANK_PIN(3) - BANK_PIN(2) == 1)
+
+#define BANK_PINS \
+    (BIT(BANK_PIN(0)) | \
+     BIT(BANK_PIN(1)) | \
+     BIT(BANK_PIN(2)) | \
+     BIT(BANK_PIN(3)))
+
+#define CONNECT_LATCHES(banks) \
+        GPIO(BANK_PORT(0), DIR) |= BANK_PINS
+
+#define DISCONNECT_LATCHES(banks) \
+        GPIO(BANK_PORT(0), DIR) &= ~BANK_PINS
+
+// We don't want to touch the rest of the pins on this port, so can't do it in
+// one assignment.
+#define CONFIG_BANKS_COMMON(banks) do { \
+        GPIO(BANK_PORT(0), OUT) &= ~BANK_PINS; \
+        GPIO(BANK_PORT(0), OUT) |= ((banks) << BANK_PIN(0)); \
+    } while (0);
+
+#if defined(LIBCAPYBARA_SWITCH_DESIGN__NC)
+#define CONFIG_BANKS(banks) CONFIG_BANKS_COMMON(~(banks))
+#elif defined(LIBCAPYBARA_SWITCH_DESIGN__NO)
+#define CONFIG_BANKS(banks) CONFIG_BANKS_COMMON(banks)
+#else // LIBCAPYBARA_SWITCH_DESIGN
+#error Invalid value of config option: LIBCAPYBARA_SWITCH_DESIGN
+#endif // LIBCAPYBARA_SWITCH_DESIGN
+
+#else // !"same port" (configure pins for each bank in a separate instruction)
+
+
+#if defined(LIBCAPYBARA_SWITCH_CONTROL__ONE_PIN)
+
+#define CONNECT_LATCH(i, op) \
+        GPIO(BANK_PORT(i), DIR) |= BIT(BANK_PIN(i))
+
+#define DISCONNECT_LATCH(i, op) \
+        GPIO(BANK_PORT(i), DIR) &= ~BIT(BANK_PIN(i))
+
+#elif defined(LIBCAPYBARA_SWITCH_CONTROL__TWO_PIN)
+
 #define CONNECT_LATCH(i, op) \
         GPIO(BANK_PORT(i, op), DIR) |= BIT(BANK_PIN(i, op))
 
@@ -111,6 +167,7 @@ __nv capybara_cfg_t pwr_levels[] = {
         GPIO(BANK_PORT(i, op), DIR) &= ~BIT(BANK_PIN(i, op))
 
 #endif // LIBCAPYBARA_SWITCH_CONTROL
+
 
 #if defined(LIBCAPYBARA_SWITCH_DESIGN__NC)
 
@@ -151,41 +208,43 @@ __nv capybara_cfg_t pwr_levels[] = {
 #error Invalid value of config option: LIBCAPYBARA_SWITCH_DESIGN
 #endif // LIBCAPYBARA_SWITCH_DESIGN
 
-int capybara_config_banks(capybara_bankmask_t banks)
-{
-    // If the switches would be all on one port, we'd do this in one
-    // assignment. Since on our board, they are hooked up to two
-    // ports, we either have optimal code that does two assignments
-    // but is not generic, or we have generic code that does four
-    // assignments. We do the latter here.
+// The following are not loops because we don't want runtime overhead
 
-    // NOTE: This is not a loop, because the pins and ports are
-    // resolved at compile time. We don't want a runtime map.
-#define CONFIG_BANK(i) \
+#define CONFIG_BANK(banks, i) \
     if (banks & (1 << i)) { BANK_CONNECT(i); } else { BANK_DISCONNECT(i); }
-#define DO_CONNECT_LATCH(i) \
+#define DO_CONNECT_LATCH(banks, i) \
     if (banks & (1 << i)) { CONNECT_LATCH(i, CLOSE); } else { CONNECT_LATCH(i, OPEN); }
-#define DO_DISCONNECT_LATCH(i) \
+#define DO_DISCONNECT_LATCH(banks, i) \
     if (banks & (1 << i)) { DISCONNECT_LATCH(i, CLOSE); } else { DISCONNECT_LATCH(i, OPEN); }
 
-    CONFIG_BANK(0);
-    CONFIG_BANK(1);
-    CONFIG_BANK(2);
-    CONFIG_BANK(3);
+#define CONFIG_BANKS(banks) \
+    CONFIG_BANK(banks, 0); \
+    CONFIG_BANK(banks, 1); \
+    CONFIG_BANK(banks, 2); \
+    CONFIG_BANK(banks, 3); \
 
-    // Overlap the delay for all banks
+#define CONNECT_LATCHES(banks) \
+    DO_CONNECT_LATCH(banks, 0); \
+    DO_CONNECT_LATCH(banks, 1); \
+    DO_CONNECT_LATCH(banks, 2); \
+    DO_CONNECT_LATCH(banks, 3); \
 
-    DO_CONNECT_LATCH(0);
-    DO_CONNECT_LATCH(1);
-    DO_CONNECT_LATCH(2);
-    DO_CONNECT_LATCH(3);
+#define DISCONNECT_LATCHES(banks) \
+    DO_DISCONNECT_LATCH(banks, 0); \
+    DO_DISCONNECT_LATCH(banks, 1); \
+    DO_DISCONNECT_LATCH(banks, 2); \
+    DO_DISCONNECT_LATCH(banks, 3); \
 
+#endif // !"same port"
+
+int capybara_config_banks(capybara_bankmask_t banks)
+{
+    // Overlap the delay for all banks (even when pins are not on same port)
+
+    CONFIG_BANKS(banks);
+    CONNECT_LATCHES(banks);
     __delay_cycles(SWITCH_TIME_CYCLES);
-
-    DO_DISCONNECT_LATCH(0);
-    DO_DISCONNECT_LATCH(1);
-    DO_DISCONNECT_LATCH(2);
-    DO_DISCONNECT_LATCH(3);
+    DISCONNECT_LATCHES(banks);
 
     return 0;
 }
