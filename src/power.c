@@ -180,6 +180,7 @@ ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 			// Save to 0x4400 ~0x443e
 #ifdef JIT
 			if (!(chkpt_mask || chkpt_mask_init)) {
+				chkpt_taken = 1;
 				__asm__ volatile ("MOV 50(R1), &0x4400");//r0
 				__asm__ volatile ("MOV 48(R1), &0x4408");//r2
 				__asm__ volatile ("MOVX.A 0(R1), &0x4410");//r4
@@ -198,8 +199,9 @@ ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 				__asm__ volatile ("MOVX.A R1, &0x4404"); //r1 (- 52)
 				__asm__ volatile ("SUB #52, R1");
 			}
-			P1OUT |= BIT3;
-			P1OUT &= ~BIT3;
+//			P1OUT |= BIT3;
+//			P1OUT &= ~BIT3;
+//			P1OUT &= ~BIT0;
 #endif
 			capybara_shutdown();
 			break;
