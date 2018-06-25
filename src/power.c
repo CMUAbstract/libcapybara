@@ -199,8 +199,8 @@ ISR(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))
 				__asm__ volatile ("MOVX.A R1, &0x4404"); //r1 (- 52)
 				__asm__ volatile ("SUB #52, R1");
 			}
-//			P1OUT |= BIT3;
-//			P1OUT &= ~BIT3;
+			P1OUT |= BIT3;
+			P1OUT &= ~BIT3;
 //			P1OUT &= ~BIT0;
 #endif
 			capybara_shutdown();
