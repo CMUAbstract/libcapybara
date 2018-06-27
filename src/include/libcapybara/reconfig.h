@@ -77,6 +77,7 @@ X(MEDHIGHP,0x7, 2.5) \
 X(HIGHP,   0xF, 2.5) \
 X(BACKP,   0xC, 2.5) \
 X(BACK3P,  0xE, 2.5) \
+X(NA,      0x0, 2.5) \
 
 #define X(a, b, c) a,
 typedef enum {
