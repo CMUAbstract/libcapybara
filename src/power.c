@@ -9,8 +9,10 @@
 #include "power.h"
 #include "reconfig.h" 
 
+#ifdef JIT
 __nv volatile unsigned chkptStart = 0;
 __nv volatile unsigned chkptEnd = 0;
+#endif
 
 void capybara_wait_for_supply()
 {
