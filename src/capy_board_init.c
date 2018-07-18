@@ -76,6 +76,7 @@ capybara_wait_for_supply();
     LOG2("Setting up i2c\r\n");
     EUSCI_B_I2C_setup();
     LOG2("fxl init\r\n");
+#ifndef LIBCAPYBARA_DISABLE_FXL
     fxl_init();
     fxl_out(BIT_PHOTO_SW);
     fxl_out(BIT_RADIO_SW);
@@ -83,6 +84,9 @@ capybara_wait_for_supply();
     fxl_out(BIT_APDS_SW);
     fxl_pull_up(BIT_CCS_WAKE);
     LOG2("Done fxl!\r\n");
+#else
+    #pragma message "Disabled libfxl"
+#endif
 
     // SENSE_SW is present but is not electrically correct: do not use.
 #elif BOARD_MAJOR == 2
