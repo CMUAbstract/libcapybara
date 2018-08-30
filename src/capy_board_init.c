@@ -29,6 +29,13 @@
 /** @brief Handler for capybara power-on sequence
     TODO add this to libcapybara...
 */
+EUSCI_B_I2C_initMasterParam params = {
+	.selectClockSource = EUSCI_B_I2C_CLOCKSOURCE_SMCLK,
+  .dataRate = EUSCI_B_I2C_SET_DATA_RATE_400KBPS,
+	.byteCounterThreshold = 0,
+  .autoSTOPGeneration = EUSCI_B_I2C_NO_AUTO_STOP
+};
+
 void capy_board_init(void) {
     msp_watchdog_disable();
     msp_gpio_unlock();
@@ -86,24 +93,72 @@ capybara_wait_for_supply();
     LOG2("Done fxl!\r\n");
 #else
     #pragma message "Disabled libfxl"
-#endif
+#endif //FXL_DISABLE
 
-    // SENSE_SW is present but is not electrically correct: do not use.
 #elif BOARD_MAJOR == 2
   #warning BOARD_MAJOR is 2
   INIT_CONSOLE();
-    __enable_interrupt();
-    msp_gpio_unlock();
-    LOG2("Setting up i2c\r\n");
-    EUSCI_B_I2C_setup();
-    LOG2("fxl init\r\n");
-    fxl_init();
-    LOG2("SENSE_SW\r\n");
-    fxl_out(BIT_SENSE_SW);
+  __enable_interrupt();
+  msp_gpio_unlock();
+  LOG2("Setting up i2c\r\n");
+  
+  //TODO figure out if this is actually better than using i2c_setup
+  //EUSCI_B_I2C_setup();
+  LOG("fxl init\r\n");
+  params.i2cClk = CS_getSMCLK();
+	GPIO_setAsPeripheralModuleFunctionInputPin(
+			GPIO_PORT_P1,
+			GPIO_PIN6 + GPIO_PIN7,
+			GPIO_SECONDARY_MODULE_FUNCTION
+			);
+	EUSCI_B_I2C_initMaster(EUSCI_B0_BASE, &params);
+	//fxl_init();
+
+	//i2c_setup();
+  fxl_init();
+  LOG2("SENSE_SW\r\n");
+  fxl_out(BIT_SENSE_SW);
+  fxl_out(BIT_APDS_SW);
+  fxl_in(BIT_APDS_INT);
+  fxl_in(BIT_HMC_DRDY);
+  fxl_in(BIT_LSM_INT1);
+  fxl_in(BIT_LSM_INT2);
 
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
 #endif // BOARD_{MAJOR,MINOR}
     __enable_interrupt();
 }
+
+void fxl_reset() {
+  params.i2cClk = CS_getSMCLK();
+	GPIO_setAsPeripheralModuleFunctionInputPin(
+			GPIO_PORT_P1,
+			GPIO_PIN6 + GPIO_PIN7,
+			GPIO_SECONDARY_MODULE_FUNCTION
+			);
+	EUSCI_B_I2C_initMaster(EUSCI_B0_BASE, &params);
+  #ifndef LIBCAPYBARA_DISABLE_FXL
+    #if (BOARD_MAJOR == 2) || (BOARD_MAJOR == 1 && BOARD_MINOR == 1)
+      fxl_init();
+      LOG2("SENSE_SW\r\n");
+      #if (BOARD_MAJOR == 2) 
+        fxl_out(BIT_SENSE_SW);
+        fxl_out(BIT_APDS_SW);
+        fxl_in(BIT_APDS_INT);
+        fxl_in(BIT_HMC_DRDY);
+        fxl_in(BIT_LSM_INT1);
+        fxl_in(BIT_LSM_INT2);
+      #else
+        fxl_out(BIT_PHOTO_SW);
+        fxl_out(BIT_RADIO_SW);
+        fxl_out(BIT_RADIO_RST);
+        fxl_out(BIT_APDS_SW);
+        fxl_pull_up(BIT_CCS_WAKE); 
+      #endif //v2.0 or v1.1
+    #endif //v2.0 or v1.1
+  #endif //DISABLE_FXL
+  return;
+}
+
 
