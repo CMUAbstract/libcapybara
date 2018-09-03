@@ -104,7 +104,7 @@ capybara_wait_for_supply();
   
   //TODO figure out if this is actually better than using i2c_setup
   //EUSCI_B_I2C_setup();
-  LOG("fxl init\r\n");
+  LOG2("fxl init\r\n");
   params.i2cClk = CS_getSMCLK();
 	GPIO_setAsPeripheralModuleFunctionInputPin(
 			GPIO_PORT_P1,
@@ -117,6 +117,7 @@ capybara_wait_for_supply();
 	//i2c_setup();
   fxl_init();
   LOG2("SENSE_SW\r\n");
+  fxl_out(BIT_PHOTO_SW);
   fxl_out(BIT_SENSE_SW);
   fxl_out(BIT_APDS_SW);
   fxl_in(BIT_APDS_INT);
@@ -143,6 +144,7 @@ void fxl_reset() {
       fxl_init();
       LOG2("SENSE_SW\r\n");
       #if (BOARD_MAJOR == 2) 
+        fxl_out(BIT_PHOTO_SW);
         fxl_out(BIT_SENSE_SW);
         fxl_out(BIT_APDS_SW);
         fxl_in(BIT_APDS_INT);

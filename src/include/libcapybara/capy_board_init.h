@@ -24,6 +24,8 @@ void fxl_reset();
 #define BIT_RADIO_SW  (1 << 7)
 
 #elif BOARD_MAJOR == 2
+#define PORT_RADIO_SW 4
+#define PIN_RADIO_SW  0
 
 #define BIT_HMC_DRDY (1 << 0)
 #define BIT_LSM_INT1 (1 << 1)
