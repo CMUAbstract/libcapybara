@@ -15,9 +15,17 @@
 #define CAPYBARA_NUM_BANKS 4
 #define CAPYBARA_MAX_THRES POT_RESOLUTION // wiper settings
 
+// Use this to disable the optimization where we only reset the config pins
+// if we're switching modes. This is a pure software hack, we need to better
+// understand why hardware reverts to the default without being powered off for
+// a really long time
+#define RECONF_OP_OFF swap_status = 0;
+
+// Configuration table needs to be defined somewhere in the app to set the power
+// modes for all of the tasks
 #define CAPYBARA_CFG_TABLE(N) \
 capybara_task_cfg_t pwr_configs[N]
-
+// Macro for defining one row in the configuration table
 #define CFG_ROW(ind,type,opcfg,precfg) {ind,type,pwr_levels + opcfg, pwr_levels+ precfg}
 
 
@@ -37,7 +45,7 @@ typedef uint8_t burst_status_t;
 typedef uint8_t swap_status_t;
 
 extern burst_status_t burst_status;
-
+extern swap_status_t swap_status;
 
 // Tuple of params that define the pwr system configuration
 typedef struct {
