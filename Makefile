@@ -1,7 +1,7 @@
 LIB = libcapybara
 
 OBJECTS += \
-  capy_board_init.o \
+  board.o \
 	capybara.o \
 	power.o \
 

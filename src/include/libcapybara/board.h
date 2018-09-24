@@ -2,7 +2,7 @@
 #define CAPY_BOARD_INIT_H
 
 void i2c_setup();
-void capy_board_init();
+void capybara_init();
 void fxl_reset();
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 0
 #define PORT_SENSE_SW 3

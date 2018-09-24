@@ -22,7 +22,7 @@
 #include "reconfig.h"
 #include "power.h"
 #include "capybara.h"
-#include "capy_board_init.h"
+#include "board.h"
 #define STRINGIFY(x) XSTRINGIFY(x)
 #define XSTRINGIFY(x) #x
 
@@ -36,7 +36,7 @@ EUSCI_B_I2C_initMasterParam params = {
   .autoSTOPGeneration = EUSCI_B_I2C_NO_AUTO_STOP
 };
 
-void capy_board_init(void) {
+void capybara_init(void) {
     msp_watchdog_disable();
     msp_gpio_unlock();
 		__enable_interrupt();
