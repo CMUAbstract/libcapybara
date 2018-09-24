@@ -102,6 +102,7 @@ capybara_wait_for_supply();
   msp_gpio_unlock();
   LOG2("Setting up i2c\r\n");
   
+  #ifndef LIBCAPYBARA_DISABLE_FXL
   //TODO figure out if this is actually better than using i2c_setup
   //EUSCI_B_I2C_setup();
   LOG2("fxl init\r\n");
@@ -113,7 +114,6 @@ capybara_wait_for_supply();
 			);
 	EUSCI_B_I2C_initMaster(EUSCI_B0_BASE, &params);
 	//fxl_init();
-
 	//i2c_setup();
   fxl_init();
   LOG2("SENSE_SW\r\n");
@@ -124,6 +124,7 @@ capybara_wait_for_supply();
   fxl_in(BIT_HMC_DRDY);
   fxl_in(BIT_LSM_INT1);
   fxl_in(BIT_LSM_INT2);
+  #endif
 
 #else // BOARD_{MAJOR,MINOR}
 #error Unsupported board: do not know what pins to configure (see BOARD var)
@@ -132,6 +133,7 @@ capybara_wait_for_supply();
 }
 
 void fxl_reset() {
+  // Reset i2c
   params.i2cClk = CS_getSMCLK();
 	GPIO_setAsPeripheralModuleFunctionInputPin(
 			GPIO_PORT_P1,
