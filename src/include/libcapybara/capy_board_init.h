@@ -27,6 +27,9 @@ void fxl_reset();
 #define PORT_RADIO_SW 4
 #define PIN_RADIO_SW  0
 
+#define PORT_RADIO_RST 4
+#define PIN_RADIO_RST  1
+
 #define HARVESTER_DISABLE \
   P2OUT |= BIT7; P2DIR |= BIT7;
 
