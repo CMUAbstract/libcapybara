@@ -101,7 +101,7 @@ capybara_wait_for_supply();
   __enable_interrupt();
   msp_gpio_unlock();
   LOG2("Setting up i2c\r\n");
-  
+
   #ifndef LIBCAPYBARA_DISABLE_FXL
   //TODO figure out if this is actually better than using i2c_setup
   //EUSCI_B_I2C_setup();

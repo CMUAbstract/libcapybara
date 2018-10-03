@@ -75,6 +75,14 @@ void capybara_shutdown()
     }
 }
 
+void capybara_boost_disable()
+{
+    // Disable booster
+    GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
+    // Continue running code
+    return;
+}
+
 cb_rc_t capybara_shutdown_on_deep_discharge()
 {
 

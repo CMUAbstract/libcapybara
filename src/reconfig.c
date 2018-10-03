@@ -72,7 +72,7 @@ int set_base_banks(capybara_bankmask_t in){
 #define X(a, b, c) {.banks = b, .vth = c},
 #else
 #define X(a, b, c) {.banks = b},
-#endif
+#endif // LIBCAPYBARA_VARTH_ENABLED
 
 __nv capybara_cfg_t pwr_levels[] = {
     PWR_LEVEL_TABLE

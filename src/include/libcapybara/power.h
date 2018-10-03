@@ -41,6 +41,9 @@ int capybara_report_vbank_ok();
 // Cut power to self by disabling the booster
 void capybara_shutdown();
 
+// Disable booster but continue running
+void capybara_boost_disable();
+
 // Setup comparator to interrupt and call shutdown when Vbank drops
 // below the deep discharge threshold (see config)
 // Returns ERROR_ALREADY_DEEPLY_DISCHARGED if already below threshold when called.
