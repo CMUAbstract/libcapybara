@@ -75,6 +75,11 @@ typedef struct {
 
 
 #define PWR_LEVEL_TABLE \
+X(LOW, 0x0, 2.5) \
+X(MEDLOW, 0x4, 2.5) \
+X(MED, 0xC, 2.5) \
+X(MEDHIGH, 0xA, 2.5) \
+X(HIGH, 0xD, 2.5) \
 X(LOWP,    0x0, 2.5) \
 X(LOWP2,   0x2, 2.5) \
 X(MEDLOWP, 0x1, 2.5) \
