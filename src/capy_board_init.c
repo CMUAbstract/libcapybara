@@ -113,17 +113,12 @@ capybara_wait_for_supply();
 			GPIO_SECONDARY_MODULE_FUNCTION
 			);
 	EUSCI_B_I2C_initMaster(EUSCI_B0_BASE, &params);
-	//fxl_init();
-	//i2c_setup();
   fxl_init();
   LOG2("SENSE_SW\r\n");
-  fxl_out(BIT_PHOTO_SW);
-  fxl_out(BIT_SENSE_SW);
-  fxl_out(BIT_APDS_SW);
-  fxl_in(BIT_APDS_INT);
-  fxl_in(BIT_HMC_DRDY);
-  fxl_in(BIT_LSM_INT1);
-  fxl_in(BIT_LSM_INT2);
+  P1OUT |= BIT1;
+  P1DIR |= BIT1;
+  P1OUT &= ~BIT1;
+  fxl_set_io_reg(FXL_CONFIG);
   #endif
 
 #else // BOARD_{MAJOR,MINOR}

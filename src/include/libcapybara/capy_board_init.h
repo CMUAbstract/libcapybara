@@ -42,6 +42,8 @@ void fxl_reset();
 #define BIT_PHOTO_SW (1 << 6)
 #define BIT_SENSE_SW (1 << 7)
 
+#define FXL_CONFIG 0b11010000
+
 #endif // BOARD.{MAJOR,MINOR}
 
 #endif//CAPY_BOARD_INIT_H
