@@ -285,6 +285,12 @@ void capybara_transition(int index)
                 swap_status = 1;
                 capybara_wait_for_supply();
             }
+            else {
+                // We'll add this here to make sure that the stupid caps get
+                // refreshed until we figure out why they're getting out of
+                // whack
+                capybara_config_banks(base_config.banks);
+            }
             //Another intentional fall through
 
         default:

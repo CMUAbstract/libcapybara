@@ -115,9 +115,6 @@ capybara_wait_for_supply();
 	EUSCI_B_I2C_initMaster(EUSCI_B0_BASE, &params);
   fxl_init();
   LOG2("SENSE_SW\r\n");
-  P1OUT |= BIT1;
-  P1DIR |= BIT1;
-  P1OUT &= ~BIT1;
   fxl_set_io_reg(FXL_CONFIG);
   #endif
 
