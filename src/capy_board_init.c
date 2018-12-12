@@ -59,6 +59,9 @@ capybara_wait_for_supply();
       capybara_shutdown();
     }
 #endif //BOARD.{MAJOR,MINOR}
+// Added to re-up the charges on the latch caps
+// TODO remove when we fix the circuit.
+capybara_config_banks(base_config.banks);
 #endif //LIBCAPYBARA_CONT_POWER
 
 #if BOARD_MAJOR == 1 && BOARD_MINOR == 0
