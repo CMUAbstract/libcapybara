@@ -275,8 +275,10 @@ void capybara_transition(int index)
             //intentional fall through
 
         case CONFIGD:
-
-            if((base_config.banks != cur->opcfg->banks) || (swap_status == 0)){
+            // TODO: figure out why Capy v2.0 doesn't support the optimization
+            // of leaving the banks in the same configuration. The latch caps
+            // leak out extremely quickly in v2.0 hardware.
+            //if((base_config.banks != cur->opcfg->banks) || (swap_status == 0)){
                 LCBPRINTF("New config! going to %x from %x\r\n",
                     cur->opcfg->banks, base_config.banks);
                 swap_status = 0;
@@ -284,7 +286,7 @@ void capybara_transition(int index)
                 capybara_config_banks(base_config.banks);
                 swap_status = 1;
                 capybara_wait_for_supply();
-            }
+            //}
             //Another intentional fall through
 
         default:
