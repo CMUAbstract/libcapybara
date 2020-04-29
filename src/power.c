@@ -6,9 +6,6 @@
 #include "power.h"
 #include "reconfig.h"
 
-// Shorthand
-#define COMP_VBANK(...)  COMP(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
-#define COMP2_VBANK(...) COMP2(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
 
 void capybara_wait_for_supply()
 {
@@ -109,6 +106,8 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
     return CB_SUCCESS;
 }
 
+#ifndef JIT
+#pragma message "Adding comp_vbank_isr"
 // Own the ISR for now, if need be can make a function, to let main own the ISR
 __attribute__ ((interrupt(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))))
 void COMP_VBANK_ISR (void)
@@ -123,6 +122,8 @@ void COMP_VBANK_ISR (void)
             break;
     }
 }
+#endif
+
 #ifdef CLANGISR
 #pragma warning "Adding in vector!"
 __attribute__((section("__interrupt_vector_comp_e"),aligned(2)))

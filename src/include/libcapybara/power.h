@@ -38,6 +38,10 @@ int capybara_report_vbank_ok();
 
 #define capybara_vbank_ok_isr() __bic_SR_register_on_exit(LPM4_bits)
 
+// Shorthand
+#define COMP_VBANK(...)  COMP(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
+#define COMP2_VBANK(...) COMP2(LIBCAPYBARA_VBANK_COMP_TYPE, __VA_ARGS__)
+
 // Cut power to self by disabling the booster
 void capybara_shutdown();
 
