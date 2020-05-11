@@ -60,13 +60,15 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
-
+    P1OUT |= BIT5;
+    P1DIR |= BIT5;
+    P1OUT &= ~BIT5;
+    // Sleep, while we wait for supply voltage to drop
+    __disable_interrupt();
 
     // Disable booster
     GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
 
-    // Sleep, while we wait for supply voltage to drop
-    __disable_interrupt();
     while (1) {
         __bis_SR_register(LPM4_bits);
     }
@@ -106,7 +108,7 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
     return CB_SUCCESS;
 }
 
-#ifndef JIT
+#ifndef LIBCAPYBARA_JIT
 #pragma message "Adding comp_vbank_isr"
 // Own the ISR for now, if need be can make a function, to let main own the ISR
 __attribute__ ((interrupt(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))))
@@ -122,11 +124,12 @@ void COMP_VBANK_ISR (void)
             break;
     }
 }
-#endif
-
-#ifdef CLANGISR
+// ONLY NECESSARY IF LLVM VERSION IS OLDER THAN V7
+#ifdef LIBCAPYBARA_CLANGISR
 #pragma warning "Adding in vector!"
 __attribute__((section("__interrupt_vector_comp_e"),aligned(2)))
 void(*__vector_compe_e)(void) = COMP_VBANK_ISR;
-#endif //GCC
+#endif //CLANGISR
+#endif //JIT
+
 
