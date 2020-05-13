@@ -40,6 +40,9 @@ void capybara_init(void) {
     msp_watchdog_disable();
     msp_gpio_unlock();
 		__enable_interrupt();
+    P1OUT |= BIT4;
+    P1DIR |= BIT4;
+    P1OUT &= ~BIT4;
 // Don't wait if we're on continuous power
 #ifndef LIBCAPYBARA_CONT_POWER
 #pragma message ("continuous power not defined!")
@@ -97,7 +100,9 @@ capybara_wait_for_supply();
 
 #elif BOARD_MAJOR == 2
   #warning BOARD_MAJOR is 2
+//#ifndef LIBCAPYBARA_LEAN_INIT
   INIT_CONSOLE();
+//#endif
   __enable_interrupt();
   msp_gpio_unlock();
   LOG2("Setting up i2c\r\n");
@@ -119,11 +124,13 @@ capybara_wait_for_supply();
   LOG2("SENSE_SW\r\n");
   fxl_out(BIT_PHOTO_SW);
   fxl_out(BIT_SENSE_SW);
+  #ifndef LIBCAPYBARA_LEAN_INIT
   fxl_out(BIT_APDS_SW);
   fxl_in(BIT_APDS_INT);
   fxl_in(BIT_HMC_DRDY);
   fxl_in(BIT_LSM_INT1);
   fxl_in(BIT_LSM_INT2);
+  #endif
   #endif
 
 #else // BOARD_{MAJOR,MINOR}
