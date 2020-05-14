@@ -40,9 +40,6 @@ void capybara_init(void) {
     msp_watchdog_disable();
     msp_gpio_unlock();
 		__enable_interrupt();
-    P1OUT |= BIT4;
-    P1DIR |= BIT4;
-    P1OUT &= ~BIT4;
 // Don't wait if we're on continuous power
 #ifndef LIBCAPYBARA_CONT_POWER
 #pragma message ("continuous power not defined!")
