@@ -2,10 +2,10 @@
 
 #include <libmsp/periph.h>
 #include <libmsp/sleep.h>
-
+#include <libfxl/fxl6408.h>
 #include "power.h"
 #include "reconfig.h"
-
+#include "board.h"
 
 void capybara_wait_for_supply()
 {
@@ -60,12 +60,15 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
-    P1OUT |= BIT5;
-    P1DIR |= BIT5;
-    P1OUT &= ~BIT5;
+    #ifndef LIBCAPYBARA_DISABLE_FXL
+    // We add this here so we fully shut down the sensors and prevent them from
+    // winding up in a weird half enabled state
+    // hopefully this works in an interrupt handler...
+    fxl_clear(BIT_SENSE_SW);
+    #endif
+
     // Sleep, while we wait for supply voltage to drop
     __disable_interrupt();
-
     // Disable booster
     GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
 
