@@ -121,8 +121,8 @@ capybara_wait_for_supply();
   LOG2("SENSE_SW\r\n");
   fxl_out(BIT_PHOTO_SW);
   fxl_out(BIT_SENSE_SW);
-  #ifndef LIBCAPYBARA_LEAN_INIT
   fxl_out(BIT_APDS_SW);
+  #ifndef LIBCAPYBARA_LEAN_INIT
   fxl_in(BIT_APDS_INT);
   fxl_in(BIT_HMC_DRDY);
   fxl_in(BIT_LSM_INT1);

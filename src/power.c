@@ -60,13 +60,6 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
-    #ifndef LIBCAPYBARA_DISABLE_FXL
-    // We add this here so we fully shut down the sensors and prevent them from
-    // winding up in a weird half enabled state
-    // hopefully this works in an interrupt handler...
-    fxl_clear(BIT_SENSE_SW);
-    #endif
-
     // Sleep, while we wait for supply voltage to drop
     __disable_interrupt();
     // Disable booster
@@ -121,6 +114,9 @@ void COMP_VBANK_ISR (void)
         case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IIFG):
 						break;
         case COMP_INTFLAG2(LIBCAPYBARA_VBANK_COMP_TYPE, IFG):
+            P1OUT |= BIT5;
+            P1DIR |= BIT5;
+            P1OUT &= ~BIT5;
             COMP_VBANK(INT) &= ~COMP_VBANK(IE);
             COMP_VBANK(CTL1) &= ~COMP_VBANK(ON);
             capybara_shutdown();
