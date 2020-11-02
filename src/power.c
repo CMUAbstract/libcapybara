@@ -60,6 +60,9 @@ void capybara_wait_for_vcap()
 
 void capybara_shutdown()
 {
+    P1OUT |= BIT5;
+    P1DIR |= BIT5;
+    P1OUT &= ~BIT5;
     // Sleep, while we wait for supply voltage to drop
     __disable_interrupt();
     // Disable booster
