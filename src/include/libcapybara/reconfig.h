@@ -87,6 +87,7 @@ X(MEDLOWP2, 0x3, 2.5) \
 X(MEDP ,   0x4, 2.5) \
 X(MEDP2,   0x5, 2.5) \
 X(MEDHIGHP,0x7, 2.5) \
+X(HIGHP2,   0xD, 2.5) \
 X(HIGHP,   0xF, 2.5) \
 X(BACKP,   0xC, 2.5) \
 X(BACK3P,  0xE, 2.5) \
