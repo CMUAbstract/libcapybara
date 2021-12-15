@@ -100,7 +100,7 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
 
     // Clear int flag and enable int
     COMP_VBANK(INT) &= ~(COMP_VBANK(IFG) | COMP_VBANK(IIFG));
-    COMP_VBANK(INT) |= COMP_VBANK(IE);
+    COMP_VBANK(INT) |= COMP_VBANK(IE) | COMP_VBANK(IIE);
     return CB_SUCCESS;
 }
 

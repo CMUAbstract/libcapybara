@@ -52,4 +52,22 @@ cb_rc_t capybara_shutdown_on_deep_discharge();
 
 void COMP_VBANK_ISR(void);
 
+#define LIBCAPYBARA_BOOST_DISABLE \
+do {\
+  GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);\
+}while(0);
+
+
+#define LIBCAPYBARA_BOOST_ENABLE \
+do {\
+  GPIO(LIBCAPYBARA_PORT_BOOST_SW,OUT) &= ~BIT(LIBCAPYBARA_PIN_BOOST_SW);\
+  P1OUT |= BIT4;\
+  P1DIR |= BIT4;\
+  msp_sleep(PERIOD_LIBCAPYBARA_VCAP_RECOVERY_TIME);\
+  P1OUT &= ~BIT4;\
+  P1DIR &= ~BIT4;\
+}while(0);
+
+
+
 #endif // LIBCAPYBARA_POWER_H
