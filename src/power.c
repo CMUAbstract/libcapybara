@@ -101,6 +101,7 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
     // Clear int flag and enable int
     COMP_VBANK(INT) &= ~(COMP_VBANK(IFG) | COMP_VBANK(IIFG));
     COMP_VBANK(INT) |= COMP_VBANK(IE) | COMP_VBANK(IIE);
+    P3OUT |= BIT5; P3DIR |= BIT5; P3OUT &= ~BIT5;
     return CB_SUCCESS;
 }
 

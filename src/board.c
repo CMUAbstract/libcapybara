@@ -120,7 +120,8 @@ capybara_wait_for_supply();
   fxl_init();
   LOG2("SENSE_SW\r\n");
   fxl_out(BIT_PHOTO_SW);
-  fxl_out(BIT_SENSE_SW);
+  //TODO figure out what to do with this
+  //fxl_out(BIT_SENSE_SW);
   fxl_out(BIT_APDS_SW);
   #ifndef LIBCAPYBARA_LEAN_INIT
   fxl_in(BIT_APDS_INT);
