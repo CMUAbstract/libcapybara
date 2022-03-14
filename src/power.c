@@ -105,6 +105,7 @@ cb_rc_t capybara_shutdown_on_deep_discharge()
 }
 
 #ifndef LIBCAPYBARA_JIT
+#ifndef LIBCAPYBARA_CONT_POWER
 #pragma message "Adding comp_vbank_isr"
 // Own the ISR for now, if need be can make a function, to let main own the ISR
 __attribute__ ((interrupt(COMP_VECTOR(LIBCAPYBARA_VBANK_COMP_TYPE))))
@@ -126,6 +127,7 @@ void COMP_VBANK_ISR (void)
 __attribute__((section("__interrupt_vector_comp_e"),aligned(2)))
 void(*__vector_compe_e)(void) = COMP_VBANK_ISR;
 #endif //CLANGISR
+#endif //CONT_POWER
 #endif //JIT
 
 
