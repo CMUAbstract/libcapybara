@@ -55,7 +55,8 @@ void capybara_wait_for_vcap()
     // Wait for Vcap to recover
     // NOTE: this is the crudest implementation: sleep for a fixed interval
     // Alternative implemenation: use Vcap supervisor, comparator, or ADC
-    msp_sleep(PERIOD_LIBCAPYBARA_VCAP_RECOVERY_TIME);
+    //msp_sleep(PERIOD_LIBCAPYBARA_VCAP_RECOVERY_TIME);TODO put this back
+    msp_sleep(1000);
 }
 
 void capybara_shutdown()
@@ -63,8 +64,10 @@ void capybara_shutdown()
     // Sleep, while we wait for supply voltage to drop
     __disable_interrupt();
     // Disable booster
+    P1OUT |= BIT4;
+    P1DIR |= BIT4;
+    P1OUT &= ~BIT4;
     GPIO(LIBCAPYBARA_PORT_BOOST_SW, OUT) |= BIT(LIBCAPYBARA_PIN_BOOST_SW);
-
     while (1) {
         __bis_SR_register(LPM4_bits);
     }
